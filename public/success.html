@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>결제 완료</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-color: #3b82f6;
+      --primary-hover: #2563eb;
+      --success-color: #10b981;
+      --error-color: #ef4444;
+      --warning-color: #f59e0b;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-error: #fef2f2;
+      --border-color: #e5e7eb;
+      --border-radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--bg-primary);
+      border-radius: var(--border-radius);
+      max-width: 480px;
+      width: 100%;
+      overflow: hidden;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .container.error {
+      background: var(--bg-error);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      text-align: center;
+      padding: 40px 32px 32px;
+      background: var(--bg-secondary);
+    }
+
+    .header.error {
+      background: var(--bg-error);
+    }
+
+    .status-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      animation: iconScale 0.6s ease-out 0.3s both;
+    }
+
+    .status-icon.success {
+      background: var(--success-color);
+    }
+
+    .status-icon.error {
+      background: var(--error-color);
+    }
+
+    .status-icon.warning {
+      background: var(--warning-color);
+    }
+
+    @keyframes iconScale {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .status-icon.success::after {
+      content: '';
+      width: 24px;
+      height: 12px;
+      border-left: 3px solid white;
+      border-bottom: 3px solid white;
+      transform: rotate(-45deg);
+      animation: drawCheck 0.3s ease-out 0.6s both;
+    }
+
+    .status-icon.error::after {
+      content: '×';
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+      line-height: 1;
+      animation: fadeIn 0.3s ease-out 0.6s both;
+    }
+
+    .status-icon.warning::after {
+      content: '!';
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+      line-height: 1;
+      animation: fadeIn 0.3s ease-out 0.6s both;
+    }
+
+    @keyframes drawCheck {
+      from {
+        width: 0;
+        height: 0;
+      }
+      to {
+        width: 24px;
+        height: 12px;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    .payment-info {
+      padding: 32px;
+    }
+
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      color: var(--error-color);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 14px;
+      min-width: 80px;
+    }
+
+    .info-value {
+      font-weight: 600;
+      color: var(--text-primary);
+      text-align: right;
+      flex: 1;
+      margin-left: 16px;
+      word-break: break-word;
+      font-size: 14px;
+    }
+
+    .info-value.error {
+      color: var(--error-color);
+    }
+
+    .amount {
+      font-size: 18px;
+      color: var(--success-color);
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 12px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .redirect-notice {
+      text-align: center;
+      padding: 16px 32px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 0;
+        border-radius: 0;
+      }
+
+      .header,
+      .payment-info,
+      .redirect-notice {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container" id="container">
+  <div class="header" id="header">
+    <div class="status-icon success" id="statusIcon"></div>
+    <h1 class="title" id="title">결제 완료</h1>
+    <p class="subtitle" id="subtitle">결제가 성공적으로 처리되었습니다</p>
+  </div>
+
+  <div id="payment-details" class="payment-info">
+    <div class="loading">
+      <div class="spinner"></div>
+      결제 정보를 불러오는 중...
+    </div>
+  </div>
+
+  <div class="redirect-notice" id="redirect-notice" style="display: none;">
+    잠시 후 메인 페이지로 이동합니다...
+  </div>
+</div>
+
+<script>
+  window.location.assign('https://roomi.co.kr/indicator.html');
+  class PaymentResultPage {
+    constructor() {
+      this.params = this.getUrlParams();
+      this.locale = this.params.locale || 'ko';
+      this.texts = this.getTexts(this.locale);
+      this.isSuccess = this.determinePaymentStatus();
+      this.init();
+    }
+
+    getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const result = {};
+      for (const [key, value] of params) {
+        result[key] = decodeURIComponent(value);
+      }
+      return result;
+    }
+
+    determinePaymentStatus() {
+      // 실패 조건들
+      if (this.params.code && this.params.code !== 'SUCCESS') {
+        return false;
+      }
+
+      // 에러 관련 파라미터들이 있는 경우
+      const errorIndicators = ['error', 'fail', 'cancel', 'abort'];
+      for (const key in this.params) {
+        const lowerKey = key.toLowerCase();
+        const lowerValue = String(this.params[key]).toLowerCase();
+
+        if (errorIndicators.some(indicator =>
+                lowerKey.includes(indicator) || lowerValue.includes(indicator)
+        )) {
+          return false;
+        }
+      }
+
+      // pgCode가 있고 성공이 아닌 경우 (일반적으로 0000이 성공)
+      if (this.params.pgCode && this.params.pgCode !== '0000') {
+        return false;
+      }
+
+      return true;
+    }
+
+    getTexts(locale) {
+      const translations = {
+        ko: {
+          success: {
+            title: '결제 완료',
+            subtitle: '결제가 성공적으로 처리되었습니다'
+          },
+          error: {
+            title: '결제 실패',
+            subtitle: '결제 처리 중 문제가 발생했습니다'
+          },
+          loading: '결제 정보를 불러오는 중...',
+          labels: {
+            orderId: '주문번호',
+            amount: '결제금액',
+            paymentKey: '결제키',
+            paymentId: '결제 ID',
+            orderName: '상품명',
+            method: '결제방법',
+            status: '상태',
+            approvedAt: '승인시간',
+            code: '응답코드',
+            message: '메시지',
+            pgCode: 'PG 코드',
+            pgMessage: 'PG 메시지',
+            transactionType: '거래유형',
+            txId: '거래 ID'
+          }
+        },
+        en: {
+          success: {
+            title: 'Payment Complete',
+            subtitle: 'Your payment has been processed successfully'
+          },
+          error: {
+            title: 'Payment Failed',
+            subtitle: 'There was a problem processing your payment'
+          },
+          loading: 'Loading payment information...',
+          labels: {
+            orderId: 'Order ID',
+            amount: 'Amount',
+            paymentKey: 'Payment Key',
+            paymentId: 'Payment ID',
+            orderName: 'Product',
+            method: 'Payment Method',
+            status: 'Status',
+            approvedAt: 'Approved At',
+            code: 'Response Code',
+            message: 'Message',
+            pgCode: 'PG Code',
+            pgMessage: 'PG Message',
+            transactionType: 'Transaction Type',
+            txId: 'Transaction ID'
+          }
+        }
+      };
+      return translations[locale] || translations.ko;
+    }
+
+    init() {
+      console.log('Payment result:', this.isSuccess ? 'SUCCESS' : 'FAILURE');
+      console.log('Parameters:', this.params);
+
+      if (this.isSuccess) {
+        this.setupSuccessUI();
+      } else {
+        this.setupErrorUI();
+      }
+
+      this.displayPaymentDetails();
+
+      // 결제 관련 파라미터가 있을 때만 웹뷰 콜백 전송 (쿼리 없으면 이미 감지됨)
+      if (this.hasPaymentParams()) {
+        this.sendWebViewCallback();
+      }
+
+      // 결제 성공 시에만 리다이렉트 실행
+      if (this.isSuccess) {
+        this.startRedirectCountdown();
+      }
+    }
+
+    setupSuccessUI() {
+      const statusIcon = document.getElementById('statusIcon');
+      const title = document.getElementById('title');
+      const subtitle = document.getElementById('subtitle');
+
+      statusIcon.className = 'status-icon success';
+      title.textContent = this.texts.success.title;
+      subtitle.textContent = this.texts.success.subtitle;
+    }
+
+    setupErrorUI() {
+      const container = document.getElementById('container');
+      const header = document.getElementById('header');
+      const statusIcon = document.getElementById('statusIcon');
+      const title = document.getElementById('title');
+      const subtitle = document.getElementById('subtitle');
+
+      container.classList.add('error');
+      header.classList.add('error');
+
+      // 에러 유형에 따라 아이콘 결정
+      const isWarning = this.params.code === 'PG_PROVIDER_ERROR' ||
+              this.params.pgMessage?.includes('초과');
+
+      statusIcon.className = isWarning ? 'status-icon warning' : 'status-icon error';
+      title.textContent = this.texts.error.title;
+      subtitle.textContent = this.texts.error.subtitle;
+    }
+
+    // 결제 관련 파라미터가 있는지 확인
+    hasPaymentParams() {
+      const paymentKeys = ['code', 'orderId', 'paymentKey', 'paymentId', 'amount', 'status', 'pgCode', 'message', 'pgMessage'];
+      return paymentKeys.some(key => this.params[key]);
+    }
+
+    // 웹뷰에서 네이티브 앱으로 콜백 전송
+    sendWebViewCallback() {
+      const callbackData = {
+        success: this.isSuccess,
+        ...this.params
+      };
+
+      // 딜레이를 주어 UI가 완전히 로드된 후 콜백 전송
+      setTimeout(() => {
+        try {
+          // Android WebView 콜백
+          if (window.Android && window.Android.onPaymentResult) {
+            console.log('Sending Android callback');
+            window.Android.onPaymentResult(JSON.stringify(callbackData));
+          }
+
+          // iOS WKWebView 콜백 (postMessage 방식)
+          if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.paymentResult) {
+            console.log('Sending iOS callback');
+            window.webkit.messageHandlers.paymentResult.postMessage(callbackData);
+          }
+
+          // Flutter WebView 콜백
+          if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+            console.log('Sending Flutter callback');
+            window.flutter_inappwebview.callHandler('paymentResult', callbackData);
+          }
+
+          // React Native WebView 콜백
+          if (window.ReactNativeWebView) {
+            console.log('Sending React Native callback');
+            window.ReactNativeWebView.postMessage(JSON.stringify(callbackData));
+          }
+
+          // 범용 콜백 (window 객체에 메서드 등록)
+          if (window.onPaymentResult && typeof window.onPaymentResult === 'function') {
+            console.log('Sending generic callback');
+            window.onPaymentResult(callbackData);
+          }
+
+          // 커스텀 이벤트 발생
+          const event = new CustomEvent('paymentResult', {
+            detail: callbackData
+          });
+          window.dispatchEvent(event);
+          document.dispatchEvent(event);
+
+          // URL 변경으로 감지 (앱에서 URL 변경을 감지하는 경우)
+          window.open('http://roomi.co.kr/indicator.html')
+
+          console.log('All callbacks sent successfully');
+
+        } catch (error) {
+          console.error('Error sending webview callback:', error);
+        }
+      }, 1500); // UI 로딩 완료를 위한 딜레이
+    }
+
+    // 리다이렉트 카운트다운 시작
+    startRedirectCountdown() {
+      const redirectNotice = document.getElementById('redirect-notice');
+
+      // 3초 후에 리다이렉트 안내 표시
+      setTimeout(() => {
+        redirectNotice.style.display = 'block';
+      }, 3000);
+
+      // 5초 후에 실제 리다이렉트 실행
+      setTimeout(() => {
+        this.redirectToSuccess();
+      }, 5000);
+    }
+
+    // 성공 페이지로 리다이렉트
+    redirectToSuccess() {
+      try {
+        console.log('Redirecting to success page...');
+        window.location.href = 'https://roomi.co.kr/success.html';
+      } catch (error) {
+        console.error('Error during redirect:', error);
+        // 리다이렉트 실패 시 fallback
+        window.open('https://roomi.co.kr/success.html', '_self');
+      }
+    }
+
+    displayPaymentDetails() {
+      const detailsElement = document.getElementById('payment-details');
+
+      setTimeout(() => {
+        const details = this.buildPaymentDetails();
+        detailsElement.innerHTML = details;
+      }, 1000);
+    }
+
+    buildPaymentDetails() {
+      // 에러인 경우 에러 메시지만 표시
+      if (!this.isSuccess) {
+        const errorMsg = this.params.message || this.params.pgMessage;
+        if (errorMsg) {
+          return `
+            <div class="error-message">
+              ${errorMsg}
+            </div>
+          `;
+        }
+      }
+
+      // 성공인 경우 기본 정보들 표시
+      const items = [];
+      const commonFields = [
+        'orderId', 'paymentId', 'amount', 'orderName',
+        'paymentKey', 'method', 'status', 'approvedAt'
+      ];
+
+      commonFields.forEach(field => {
+        if (this.params[field]) {
+          let value = this.params[field];
+          let className = '';
+
+          if (field === 'amount') {
+            value = this.formatAmount(value);
+            className = 'amount';
+          } else if (field === 'method') {
+            value = this.getPaymentMethodName(value);
+          } else if (field === 'status') {
+            value = this.getStatusName(value);
+          } else if (field === 'approvedAt') {
+            value = this.formatDate(new Date(value));
+          }
+
+          items.push(this.createInfoItem(this.texts.labels[field], value, className));
+        }
+      });
+
+      return items.length > 0 ? items.join('') :
+              `<div class="info-item">
+          <span class="info-label">상태</span>
+          <span class="info-value">정보를 불러올 수 없습니다</span>
+        </div>`;
+    }
+
+    createInfoItem(label, value, className = '') {
+      return `
+        <div class="info-item">
+          <span class="info-label">${label}</span>
+          <span class="info-value ${className}">${value}</span>
+        </div>
+      `;
+    }
+
+    formatAmount(amount) {
+      const num = parseInt(amount);
+      if (isNaN(num)) return amount;
+
+      if (this.locale === 'ko') {
+        return `${num.toLocaleString()}원`;
+      } else if (this.locale === 'ja') {
+        return `¥${num.toLocaleString()}`;
+      } else {
+        return `$${num.toLocaleString()}`;
+      }
+    }
+
+    getPaymentMethodName(method) {
+      const methodNames = {
+        ko: {
+          CARD: '카드',
+          VIRTUAL_ACCOUNT: '가상계좌',
+          MOBILE_PHONE: '휴대폰',
+          TRANSFER: '계좌이체',
+          CULTURE_GIFT_CERTIFICATE: '문화상품권',
+          BOOK_GIFT_CERTIFICATE: '도서문화상품권',
+          GAME_GIFT_CERTIFICATE: '게임문화상품권'
+        }
+      };
+      return methodNames[this.locale]?.[method] || method;
+    }
+
+    getStatusName(status) {
+      const statusNames = {
+        ko: {
+          READY: '준비됨',
+          IN_PROGRESS: '진행중',
+          WAITING_FOR_DEPOSIT: '입금대기',
+          DONE: '완료',
+          CANCELED: '취소됨',
+          PARTIAL_CANCELED: '부분취소',
+          ABORTED: '중단됨',
+          EXPIRED: '만료됨'
+        }
+      };
+      return statusNames[this.locale]?.[status] || status;
+    }
+
+    formatDate(date) {
+      if (!(date instanceof Date) || isNaN(date)) return '';
+
+      return `${date.getFullYear()}-${this.padZero(date.getMonth() + 1)}-${this.padZero(date.getDate())} ${this.padZero(date.getHours())}:${this.padZero(date.getMinutes())}`;
+    }
+
+    padZero(num) {
+      return num < 10 ? '0' + num : num;
+    }
+  }
+
+  // 페이지 로드 시 초기화
+  document.addEventListener('DOMContentLoaded', () => {
+    window.location.reload = 'https://roomi.co.kr/indicator.html';
+  });
+</script>
+</body>
+</html>

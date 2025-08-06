@@ -1,0 +1,4 @@
+.guest-mypage-right {
+    max-height: calc(150vh);
+    overflow-y: auto;
+}

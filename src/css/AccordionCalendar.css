@@ -1,0 +1,306 @@
+/* AccordionCalendar.css - 완전히 수정된 버전 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.accordion-calendar {
+    width: 100%;
+    padding: 0;
+    background: transparent;
+}
+
+/* 캘린더 커스텀 스타일 */
+.accordion-custom-calendar {
+    width: 100% !important;
+    border: none !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    font-family: inherit !important;
+}
+
+/* 헤더 타이틀 정렬 */
+.accordion-custom-calendar .react-calendar__navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    height: auto;
+    padding: 12px 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.accordion-custom-calendar .react-calendar__navigation__label {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #333;
+}
+
+.accordion-custom-calendar .react-calendar__navigation button {
+    min-width: 36px;
+    background: none;
+}
+
+.accordion-custom-calendar .react-calendar__navigation button:enabled:hover,
+.accordion-custom-calendar .react-calendar__navigation button:enabled:focus {
+    background-color: #f8f8f8;
+}
+
+/* 요일 스타일링 */
+.accordion-custom-calendar .react-calendar__month-view__weekdays {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #666;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.accordion-custom-calendar .react-calendar__month-view__weekdays__weekday {
+    padding: 0.75rem 0.5rem;
+}
+
+/* 캘린더 그리드 조정 */
+.accordion-custom-calendar .react-calendar__month-view__days {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0; /* 제거하여 날짜 사이 틈을 없앱니다 */
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* 타일(날짜) 스타일링 */
+.accordion-custom-calendar .react-calendar__tile {
+    padding: 0 !important;
+    background: none;
+    text-align: center;
+    line-height: 1;
+    font-size: 0.9rem;
+    height: 2.8em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0; /* 마진 제거 */
+    position: relative;
+    transition: all 0.2s ease;
+    border-radius: 0; /* 기본적으로 모서리를 둥글게 하지 않음 */
+}
+
+/* 오늘 날짜 스타일 */
+.accordion-custom-calendar .react-calendar__tile--now {
+    background-color: rgba(244, 67, 54, 0.05);
+    font-weight: bold;
+}
+
+/* 날짜 호버 효과 */
+.accordion-custom-calendar .react-calendar__tile:enabled:hover {
+    background-color: rgba(244, 67, 54, 0.1) !important;
+    border-radius: 0;
+}
+
+/* 날짜 범위 선택의 시작일과 종료일 호버 효과 무시 */
+.accordion-custom-calendar .react-calendar__tile.start-date:enabled:hover,
+.accordion-custom-calendar .react-calendar__tile.end-date:enabled:hover {
+    background-color: transparent !important;
+}
+
+/* 날짜 범위 선택 스타일링 - 시작일과 종료일 */
+.accordion-custom-calendar .start-date,
+.accordion-custom-calendar .end-date {
+    position: relative;
+    z-index: 2;
+}
+
+/* 체크인 날짜 스타일 */
+.accordion-custom-calendar .start-date abbr {
+    color: white !important;
+    font-weight: bold;
+    position: relative;
+    z-index: 5;
+}
+
+/* 체크아웃 날짜 스타일 */
+.accordion-custom-calendar .end-date abbr {
+    color: white !important;
+    font-weight: bold;
+    position: relative;
+    z-index: 5;
+}
+
+/* 체크인 날짜 원형 배경 */
+.accordion-custom-calendar .start-date::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2.8em;
+    height: 2.8em;
+    background-color: #ff8282;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+/* 체크아웃 날짜 원형 배경 */
+.accordion-custom-calendar .end-date::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2.8em;
+    height: 2.8em;
+    background-color: #ff8282;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+/* 체크인 오른쪽 반 배경 */
+.accordion-custom-calendar .start-date::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    background-color: theme('colors.roomi-00');
+    z-index: 0;
+}
+
+/* 체크아웃 왼쪽 반 배경 */
+.accordion-custom-calendar .end-date::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 50%;
+    width: 50%;
+    height: 100%;
+    background-color: theme('colors.roomi-00');
+    z-index: 0;
+}
+
+/* 체크인~체크아웃 사이 날짜들 */
+.accordion-custom-calendar .in-range {
+    background-color: theme('colors.roomi-00') !important;
+    color: white !important;
+    position: relative;
+    z-index: 0;
+    border-radius: 0 !important;
+}
+
+/* 확인 버튼 스타일 */
+.confirm-button {
+    background-color: #ff8282;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.confirm-button:hover {
+    background-color: #d86558;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 전체 캘린더 컨테이너 높이 조정 */
+.calendar-container {
+    min-height: 320px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.react-calendar__tile.end-date::before, .react-calendar__tile.start-date::before {
+    width: 42px !important;
+    height: 42px !important;
+    background-color: #ff8282;
+}
+/* 모바일 일때 원 크기*/
+@media screen and (max-width: 768px) {
+    .react-calendar__tile.end-date::before, .react-calendar__tile.start-date::before {
+        width: 33px !important;
+        height: 33px !important;
+    }
+}
+/* 화면 크기별 대응 */
+@media (min-width: 876px) {
+    .accordion-calendar {
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .accordion-custom-calendar {
+        font-size: 1rem;
+    }
+
+    /* 큰 화면에서 더 정사각형에 가깝게 표시 */
+    .accordion-custom-calendar .react-calendar__tile {
+        padding: 1em 0.2em;
+        height: 3em;
+    }
+
+    /* 시작일과 종료일 원 크기 조정 */
+    .start-date::before,
+    .end-date::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #ff8282;
+        border-radius: 50%;
+        z-index: 1;
+    }
+}
+
+/* 중간 화면 대응 */
+@media (min-width: 641px) and (max-width: 875px) {
+    .accordion-calendar {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .accordion-custom-calendar .react-calendar__tile {
+        padding: 0.8em 0.1em;
+        height: 2.8em;
+    }
+}
+
+/* 모바일 대응 */
+@media (max-width: 640px) {
+    .accordion-custom-calendar {
+        font-size: 0.9rem;
+    }
+
+    .accordion-custom-calendar .react-calendar__tile {
+        padding: 0.6em 0.1em;
+        font-size: 0.8rem;
+        height: 2.5em;
+    }
+
+    .accordion-custom-calendar .start-date::before,
+    .accordion-custom-calendar .end-date::before {
+        content: '';
+        position: absolute;
+        inset: 0; /* top: 0; bottom: 0; left: 0; right: 0 한 번에 처리 */
+        background-color: #ff8282;
+        border-radius: 50%;
+        z-index: 1;
+    }
+
+    .calendar-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .calendar-header .flex {
+        margin-top: 0.5rem;
+    }
+}

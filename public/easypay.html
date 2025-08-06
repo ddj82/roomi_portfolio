@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아임포트 테스트 결제</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+</head>
+<body>
+<div style="text-align: center; padding: 20px;">
+    <h2>아임포트 결제 테스트</h2>
+    <button onclick="initPayment()" style="padding: 10px; font-size: 16px;">결제 요청</button>
+    <div id="debug-info" style="text-align: left; padding: 10px; font-size: 12px; color: #666; border: 1px solid #ccc; margin-top: 20px; white-space: pre-wrap;"></div>
+    <div id="error-message" style="color: red; display: none;"></div>
+</div>
+
+<script>
+    function addDebugInfo(message, data = null) {
+        const debugDiv = document.getElementById('debug-info');
+        const timestamp = new Date().toLocaleTimeString();
+        let logMessage = `[${timestamp}] ${message}`;
+
+        if (data) {
+            logMessage += `\n${JSON.stringify(data, null, 2)}`;  // JSON 포맷 정리
+        }
+
+        debugDiv.innerHTML += logMessage + "\n\n";
+        console.log(logMessage);
+    }
+
+    // 기본 테스트 데이터
+    const params = {
+        orderId: `test_order_${Date.now()}`,
+        amount: "1000",
+        currency: "KRW",
+        buyerName: "테스트 유저",
+        buyerEmail: "test@example.com",
+        buyerTel: "01012345678",
+        buyerAddr: "서울특별시 강남구",
+        customer_uid : "TESTSTESRESR",
+        pg: "uplus", // ✅ Eximbay V2 설정
+        testMode: true  // ✅ 테스트 모드 활성화
+    };
+
+    function initPayment() {
+        if (!window.IMP) {
+            addDebugInfo('⚠️ 아임포트 SDK 로딩 대기 중...');
+            setTimeout(initPayment, 1000);
+            return;
+        }
+
+        const IMP = window.IMP;
+        IMP.init("imp19424728");  // ✅ 본인의 '가맹점 식별 코드(userCode)' 입력
+
+        addDebugInfo('🚀 결제 요청 시작...', params);
+
+        IMP.request_pay({
+            pg: params.pg,
+            pay_method: "card",
+            merchant_uid: params.orderId,
+            name: "테스트 결제 상품",
+            amount: params.amount,
+            currency: params.currency,
+            buyer_name: params.buyerName,
+            buyer_email: params.buyerEmail,
+            buyer_tel: params.buyerTel,
+            buyer_addr: params.buyerAddr,
+            buyer_postcode: "06018",
+            m_redirect_url: "example://payment-success",
+            custom_data: { testMode: params.testMode }
+        }, function (rsp) {
+            console.log("📌 결제 응답:", rsp);
+            addDebugInfo("📩 결제 응답 수신:", rsp);
+
+            if (rsp.success) {
+                addDebugInfo('✅ 결제 성공:', rsp);
+                alert("🎉 결제가 성공적으로 완료되었습니다!");
+            } else {
+                addDebugInfo('❌ 결제 실패:', rsp);
+                document.getElementById('error-message').textContent =
+                    `결제 실패: ${rsp.error_msg || 'Unknown error'}`;
+                document.getElementById('error-message').style.display = 'block';
+            }
+        });
+    }
+
+    window.onload = function() {
+        addDebugInfo('📌 페이지 로드 완료');
+        addDebugInfo('🛠️ 기본 테스트 데이터:', params);
+    };
+</script>
+</body>
+</html>

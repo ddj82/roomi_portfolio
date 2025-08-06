@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortOne PayPal 결제</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: transparent;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #FF8282;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .portone-ui-container {
+            min-height: 400px;
+            width: 100%;
+            display: block !important;
+            visibility: visible !important;
+            position: relative;
+            margin-top: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .loading-text {
+            color: #666;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 12px;
+            color: #666;
+            border: 1px solid #dee2e6;
+        }
+
+        .debug-info h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+
+        .debug-info pre {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="spinner"></div>
+
+    <div class="portone-ui-container">
+        <!-- PayPal UI가 여기에 로드됩니다 -->
+    </div>
+
+    <div id="statusMessage" class="status-message"></div>
+
+    <!-- 디버그 정보 (개발 시에만 표시) -->
+    <div id="debugInfo" class="debug-info" style="display: none;">
+        <h4>디버그 정보</h4>
+        <pre id="debugContent"></pre>
+    </div>
+</div>
+
+<!-- PortOne SDK 로드 -->
+<script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+
+<script>
+    // URL 파라미터 파싱
+    function getUrlParameters() {
+        const params = new URLSearchParams(window.location.search);
+        const urlParams = {};
+
+        // 모든 파라미터를 객체로 변환
+        for (const [key, value] of params.entries()) {
+            urlParams[key] = value;
+        }
+
+        return urlParams;
+    }
+
+    // 통화별 금액 변환 함수
+    function convertAmountByCurrency(amount, currency) {
+        const amountFloat = parseFloat(amount);
+
+        // 소수점 없는 통화들 (최소 단위가 이미 정수인 통화)
+        const zeroDecimalCurrencies = [
+            'JPY', // 일본 엔
+            'KRW', // 한국 원
+            'VND', // 베트남 동
+            'CLP', // 칠레 페소
+            'ISK', // 아이슬란드 크로나
+            'HUF', // 헝가리 포린트
+            'TWD', // 대만 달러
+            'UGX', // 우간다 실링
+            'PYG', // 파라과이 과라니
+            'RWF', // 르완다 프랑
+            'BIF', // 부룬디 프랑
+            'DJF', // 지부티 프랑
+            'GNF', // 기니 프랑
+            'KMF', // 코모로 프랑
+            'MGA', // 마다가스카르 아리아리
+            'XAF', // 중앙아프리카 프랑
+            'XOF', // 서아프리카 프랑
+            'XPF'  // CFP 프랑
+        ];
+
+        if (zeroDecimalCurrencies.includes(currency?.toUpperCase())) {
+            // 소수점 없는 통화는 그대로 반환 (정수로 변환)
+            return Math.round(amountFloat);
+        } else {
+            // 소수점 있는 통화는 100을 곱해서 센트 단위로 변환
+            return Math.round(amountFloat * 100);
+        }
+    }
+
+    // 결제 파라미터 설정
+    let paymentParams = {};
+
+    // SDK 로드 상태 확인
+    function checkSDKStatus() {
+        console.log('=== SDK 상태 확인 ===');
+        console.log('window.PortOne:', window.PortOne);
+        console.log('typeof window.PortOne:', typeof window.PortOne);
+
+        if (window.PortOne) {
+            console.log('✅ PortOne SDK 사용 가능');
+            console.log('PortOne 메서드들:', Object.keys(window.PortOne));
+        } else {
+            console.log('❌ PortOne SDK 없음');
+        }
+    }
+
+    // 파라미터 유효성 검사
+    function validateParameters(params) {
+        const required = ['amount', 'orderId', 'orderName'];
+        const missing = required.filter(field => !params[field]);
+
+        if (missing.length > 0) {
+            throw new Error(`필수 파라미터가 누락되었습니다: ${missing.join(', ')}`);
+        }
+
+        // amount를 숫자로 변환
+        const amount = parseFloat(params.amount);
+        if (isNaN(amount) || amount <= 0) {
+            throw new Error('올바른 금액을 입력해주세요.');
+        }
+
+        return true;
+    }
+
+    // 디버그 정보 표시
+    function showDebugInfo(params, convertedAmount) {
+        const debugInfo = document.getElementById('debugInfo');
+        const debugContent = document.getElementById('debugContent');
+
+        // 개발 환경에서만 디버그 정보 표시
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            debugInfo.style.display = 'block';
+            const debugData = {
+                ...params,
+                originalAmount: params.amount,
+                convertedAmount: convertedAmount,
+                currency: params.currency || 'USD'
+            };
+            debugContent.textContent = JSON.stringify(debugData, null, 2);
+        }
+    }
+
+    // 결제 시작 함수
+    function startPayment() {
+        console.log('=== 결제 시작 ===');
+        checkSDKStatus();
+
+        const container = document.querySelector('.portone-ui-container');
+        const statusMessage = document.getElementById('statusMessage');
+
+        try {
+            // URL 파라미터 가져오기
+            const urlParams = getUrlParameters();
+            console.log('URL 파라미터:', urlParams);
+
+            // 파라미터 유효성 검사
+            validateParameters(urlParams);
+
+            // 통화 설정 (기본값: USD)
+            const currency = urlParams.currency || "USD";
+
+            // 통화별 금액 변환
+            const convertedAmount = convertAmountByCurrency(urlParams.amount, currency);
+            console.log(`금액 변환: ${urlParams.amount} ${currency} → ${convertedAmount} (최소 단위)`);
+
+            // 디버그 정보 표시
+            showDebugInfo(urlParams, convertedAmount);
+
+            // 결제 파라미터 설정
+            paymentParams = {
+                uiType: "PAYPAL_SPB",
+                storeId: "store-7bb98274-0fb5-4b2e-8d60-d3bff2f3ca85",
+                paymentId: urlParams.orderId,
+                orderName: urlParams.orderName,
+                totalAmount: convertedAmount,
+                currency: currency,
+                channelKey: "channel-key-9c14b981-0f85-4a23-abb6-0f29fcf1f9f5",//라이브 키
+                // channelKey: "channel-key-32257656-6637-40bf-b343-795dbb0b1beb",//테스트 키
+                containerId: "portone-ui-container",
+                customer: {
+                    customerId: urlParams.customerKey || `roomi_user_${Date.now()}`,
+                    fullName: urlParams.customerName || urlParams.buyerName || "Customer",
+                    email: urlParams.customerEmail || urlParams.buyerEmail || "customer@example.com"
+                },
+                redirectUrl: "com.myno1214.roomi://result",
+                m_redirect_url: "com.myno1214.roomi://result",
+                lang: "EN"
+            };
+
+            // 선택적 파라미터 추가
+            if (urlParams.customerMobilePhone || urlParams.buyerTel) {
+                paymentParams.customer.phoneNumber = urlParams.customerMobilePhone || urlParams.buyerTel;
+            }
+
+            console.log('최종 결제 파라미터:', paymentParams);
+
+            // 결제 콜백 설정
+            const callbacks = {
+                onPaymentSuccess: (response) => {
+                    console.log("✅ 결제 성공", response);
+
+                    // 성공 URL로 리다이렉트
+                    const successUrl = urlParams.successUrl ||
+                        `com.myno1214.roomi://result?status=success&paymentId=${response.paymentId || ''}&transactionId=${response.transactionId || ''}`;
+
+                    console.log('성공 페이지로 리다이렉트:', successUrl);
+                    window.location.href = successUrl;
+                },
+                onPaymentFail: (error) => {
+                    console.error("❌ 결제 실패", error);
+
+                    // 실패 URL로 리다이렉트
+                    const failUrl = urlParams.failUrl ||
+                        `com.myno1214.roomi://result?status=fail&error=${encodeURIComponent(error.message || 'Unknown error')}`;
+
+                    console.log('실패 페이지로 리다이렉트:', failUrl);
+                    window.location.href = failUrl;
+                }
+            };
+
+            // PortOne SDK 확인 및 결제 시작
+            if (window.PortOne) {
+                console.log('결제 UI 로드 시작...');
+
+                // 스피너 숨기기
+                document.querySelector('.spinner').style.display = 'none';
+
+                // 컨테이너 초기화
+                container.innerHTML = '';
+                container.style.display = 'block';
+
+                // 결제 UI 로드
+                const result = window.PortOne.loadPaymentUI(paymentParams, callbacks);
+                console.log('loadPaymentUI 결과:', result);
+
+            } else {
+                throw new Error('PortOne SDK가 로드되지 않았습니다.');
+            }
+
+        } catch (error) {
+            console.error('결제 시작 실패:', error);
+            showStatus('결제 시작 중 오류가 발생했습니다: ' + error.message, 'error');
+        }
+    }
+
+    // 상태 메시지 표시 함수
+    function showStatus(message, type) {
+        const statusMessage = document.getElementById('statusMessage');
+        statusMessage.textContent = message;
+        statusMessage.className = `status-message status-${type}`;
+        statusMessage.style.display = 'block';
+
+        // 5초 후 메시지 숨기기
+        setTimeout(() => {
+            statusMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    // 페이지 로드 완료 후 처리
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== DOM 로드 완료 ===');
+
+        // URL 파라미터 체크
+        const urlParams = getUrlParameters();
+        console.log('받은 URL 파라미터:', urlParams);
+
+        // 필수 파라미터 체크
+        if (!urlParams.amount || !urlParams.orderId || !urlParams.orderName) {
+            // showStatus('필수 파라미터가 누락되었습니다. (amount, orderId, orderName)', 'error');
+            return;
+        }
+
+        // SDK 로드 확인 후 자동 결제 시작
+        const checkSDKAndStart = () => {
+            if (window.PortOne) {
+                console.log('✅ PortOne SDK 로드 완료 - 자동 결제 시작');
+                setTimeout(() => {
+                    startPayment();
+                }, 1000);
+            } else {
+                console.log('⏳ PortOne SDK 로드 중... 재시도');
+                setTimeout(checkSDKAndStart, 1000);
+            }
+        };
+
+        checkSDKAndStart();
+    });
+
+    // 스크립트 로드 에러 처리
+    window.addEventListener('error', function(e) {
+        console.error('스크립트 로드 에러:', e);
+        showStatus('결제 시스템 로드 중 오류가 발생했습니다.', 'error');
+    });
+</script>
+</body>
+</html>

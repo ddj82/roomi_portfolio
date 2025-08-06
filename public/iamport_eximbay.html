@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eximbay 결제</title>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+</head>
+<body>
+<h2>Eximbay 결제 진행 중...</h2>
+<div id="debug-info" style="text-align: left; padding: 10px; font-size: 12px; color: #666;"></div>
+<div id="error-message" style="color: red; display: none;"></div>
+
+<script>
+    function addDebugInfo(message) {
+        const debugDiv = document.getElementById('debug-info');
+        const timestamp = new Date().toLocaleTimeString();
+        debugDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+        console.log(`[${timestamp}] ${message}`);
+    }
+
+    // ✅ URL 파라미터 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {
+        orderId: urlParams.get('orderId') || 'order_12345',
+        amount: urlParams.get('amount') || '10000',
+        currency: urlParams.get('currency') || 'USD',
+        mid: urlParams.get('mid') || '1849705C64',
+        buyerName: urlParams.get('buyerName') || '테스트 구매자',
+        buyerEmail: urlParams.get('buyerEmail') || 'test@example.com',
+        buyerTel: urlParams.get('buyerTel') || '01012345678',
+        buyerAddr: urlParams.get('buyerAddr') || '서울특별시 강남구',
+        returnUrl: urlParams.get('returnUrl') || 'example://success'
+    };
+
+    addDebugInfo('전달받은 파라미터: ' + JSON.stringify(params));
+
+    // ✅ 아임포트 결제 요청
+    function requestPayment() {
+        const IMP = window.IMP;
+        IMP.init('imp08818232'); // ✅ 여기에 Iamport 가맹점 코드 입력
+
+        addDebugInfo('결제 요청 시작');
+
+        IMP.request_pay({
+            pg: 'eximbay_v2',  // ✅ Eximbay 결제 설정
+            pay_method: 'card', // ✅ 카드 결제 (기타 결제 가능)
+            merchant_uid: params.orderId,  // ✅ 주문번호
+            name: '테스트 상품',  // ✅ 상품명
+            amount: params.amount,  // ✅ 결제금액
+            currency: params.currency,  // ✅ 통화 (KRW, USD 등)
+            buyer_name: params.buyerName,
+            buyer_email: params.buyerEmail,
+            buyer_tel: params.buyerTel,
+            buyer_addr: params.buyerAddr,
+            m_redirect_url: params.returnUrl  // ✅ 모바일 리디렉트 URL
+        }, function(response) {
+            if (response.success) {
+                addDebugInfo('✅ 결제 성공: ' + JSON.stringify(response));
+                alert('결제 성공!\n결제 ID: ' + response.imp_uid);
+            } else {
+                addDebugInfo('❌ 결제 실패: ' + JSON.stringify(response));
+                alert('결제 실패: ' + response.error_msg);
+                document.getElementById('error-message').textContent = '결제 실패: ' + response.error_msg;
+                document.getElementById('error-message').style.display = 'block';
+            }
+        });
+    }
+
+    window.onload = function() {
+        addDebugInfo('페이지 로드 완료');
+        setTimeout(requestPayment, 1000);
+    };
+</script>
+</body>
+</html>

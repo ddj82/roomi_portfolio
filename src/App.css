@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@font-face {
+    font-family: 'Inter';
+    src: url('./fonts/Inter-Variable.ttf') format('truetype');
+    font-weight: 100 900; /* Inter Variable은 가변 폰트니까 범위 지정 가능 */
+    font-display: swap;
+}
+
+body {
+    font-family: 'Inter';
+}
+
+/* 메인 스크롤바 숨기기 */
+html, body {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE, Edge */
+    background-color: white;
+}
+#root {
+    background-color: white;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+.no-select {
+    user-select: none; /* 텍스트 드래그 방지 */
+}
+
+div.app.container {
+    width: 100%;
+    margin: 0 auto;
+    flex: 1;
+}
+
+.toss-modal {
+    overflow: hidden !important; /* 스크롤 막기 */
+}
+
+.hide-on-mobile {
+    /* 기본 상태에서는 보이도록 설정 */
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none;
+    }
+}
+
+/* number input 화살표 제거 - Chrome, Safari */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}

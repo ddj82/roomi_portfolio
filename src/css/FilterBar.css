@@ -1,0 +1,46 @@
+.filterBar.container {
+    display: flex;
+    align-items: center;
+    position: relative; /* 버튼 고정을 위한 상대 위치 */
+    width: 100%;
+    padding: 10px 0;
+    z-index: 10;
+    background-color: white;
+}
+
+.filterBar.scroll-container {
+    width: 100%;
+    display: flex;
+    overflow-x: auto; /* 가로 스크롤 활성화 */
+    scroll-behavior: smooth; /* 부드러운 스크롤 */
+}
+
+.filterBar.filterBar-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    cursor: pointer;
+    border: 1px solid #E5E7EB;
+}
+
+.filterBar.arrow-button {
+    position: absolute; /* 고정된 위치 */
+    top: 50%; /* 수직 중앙 정렬 */
+    transform: translateY(-50%);
+    background-color: white;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filterBar.arrow-button.left {
+    left: 5px; /* 왼쪽 위치 */
+}
+
+.filterBar.arrow-button.right {
+    right: 5px; /* 오른쪽 위치 */
+}

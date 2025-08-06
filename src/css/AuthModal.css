@@ -1,0 +1,197 @@
+.authModal.auth-modal-container {
+    width: 90%;
+    max-width: 500px;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    /* 모바일에서 화면을 벗어나지 않도록 수정 */
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-sizing: border-box;
+    /* 모든 하위 요소들이 컨테이너 안에 들어가도록 */
+    overflow-x: hidden;
+}
+
+.authModal.modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.authModal.input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.authInput {
+    padding: 12px;
+    margin-bottom: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    /* 모바일에서 줌 방지 */
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.authModal.button-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.authModal.submit-button, .authModal.cancel-button {
+    padding: 10px 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    width: 100%;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.authModal.submit-button {
+    background-color: #ff8282;
+    color: white;
+    font-weight: 600;
+    border: none;
+}
+
+.authModal.cancel-button {
+    background-color: #F5F5F5;
+    color: #4B5563;
+    border: none;
+}
+
+.authModal.social-login-container {
+    margin-top: 16px;
+    margin-bottom: 32px;
+    width: 100%;
+}
+
+.authModal.social-login-container h4 {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.authModal.social-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+}
+
+.authModal.social-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+.authModal.social-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+/* 모바일 최적화 */
+@media screen and (max-width: 480px) {
+    .authModal.auth-modal-container {
+        width: calc(100% - 20px); /* 양쪽 10px 여백 */
+        max-width: none;
+        padding: 16px;
+        max-height: 85vh;
+        margin: 10px;
+        /* 모든 내부 요소가 컨테이너 안에 들어가도록 강제 */
+        overflow-x: hidden;
+    }
+
+    /* 모든 하위 요소들이 컨테이너를 넘지 않도록 */
+    .authModal.auth-modal-container * {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .authModal.modal-content {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .authModal.input-container {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .authInput {
+        font-size: 16px; /* iOS Safari 줌 방지를 위해 16px 유지 */
+        padding: 12px 10px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .authModal.button-container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .authModal.submit-button,
+    .authModal.cancel-button {
+        font-size: 16px; /* 일관성을 위해 16px로 통일 */
+        padding: 12px;
+        min-height: 44px; /* 터치 친화적인 최소 높이 */
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .authModal.social-login-container {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 12px;
+        margin-bottom: 20px;
+    }
+
+    .authModal.social-buttons {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .authModal.social-button {
+        font-size: 14px;
+        padding: 12px 8px;
+        min-height: 44px; /* 터치 친화적인 최소 높이 */
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* 매우 작은 화면 (320px 이하) */
+@media screen and (max-width: 320px) {
+    .authModal.auth-modal-container {
+        width: calc(100% - 10px); /* 양쪽 5px 여백 */
+        padding: 12px;
+        margin: 5px;
+    }
+
+    .authModal.social-login-container h4 {
+        font-size: 14px;
+    }
+}

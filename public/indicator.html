@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로딩 중...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        /* 기본 스피너 */
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* 펄스 스피너 */
+        .pulse-spinner {
+            width: 48px;
+            height: 48px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* 도트 스피너 */
+        .dots-spinner {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite both;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0s; }
+
+        /* 링 스피너 */
+        .ring-spinner {
+            width: 48px;
+            height: 48px;
+            position: relative;
+        }
+
+        .ring-spinner div {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            margin: 4px;
+            border: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-color: #3b82f6 transparent transparent transparent;
+        }
+
+        .ring-spinner div:nth-child(1) { animation-delay: -0.45s; }
+        .ring-spinner div:nth-child(2) { animation-delay: -0.3s; }
+        .ring-spinner div:nth-child(3) { animation-delay: -0.15s; }
+
+        /* 파도 스피너 */
+        .wave-spinner {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+        }
+
+        .wave-bar {
+            width: 4px;
+            height: 32px;
+            background: #3b82f6;
+            border-radius: 2px;
+            animation: wave 1.2s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) { animation-delay: 0s; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        .loading-text {
+            color: #6b7280;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .loading-subtext {
+            color: #9ca3af;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* 스피너 선택 버튼 */
+        .spinner-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 320px;
+        }
+
+        .spinner-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .spinner-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .spinner-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .spinner-btn.active:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        /* 애니메이션 정의 */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes ring {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes wave {
+            0%, 40%, 100% {
+                transform: scaleY(0.4);
+            }
+            20% {
+                transform: scaleY(1);
+            }
+        }
+
+        /* 반응형 */
+        @media (max-width: 480px) {
+            .loading-text {
+                font-size: 18px;
+            }
+
+            .loading-subtext {
+                font-size: 16px;
+            }
+
+            .spinner-controls {
+                bottom: 40px;
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="loading-container">
+    <!-- 기본 스피너 -->
+    <div class="spinner-wrapper active" data-spinner="basic">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- 펄스 스피너 -->
+    <div class="spinner-wrapper" data-spinner="pulse">
+        <div class="pulse-spinner"></div>
+    </div>
+
+    <!-- 도트 스피너 -->
+    <div class="spinner-wrapper" data-spinner="dots">
+        <div class="dots-spinner">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+
+    <!-- 링 스피너 -->
+    <div class="spinner-wrapper" data-spinner="ring">
+        <div class="ring-spinner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <!-- 파도 스피너 -->
+    <div class="spinner-wrapper" data-spinner="wave">
+        <div class="wave-spinner">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+    window.location.hash = '#payment';
+
+    function triggerPaymentCallback() {
+        // URL 파라미터로 성공/실패 판단
+        const params = new URLSearchParams(window.location.search);
+        const isSuccess = !params.get('code') || params.get('code') === 'SUCCESS';
+
+        // Hash 설정
+        if (isSuccess) {
+            window.location.hash = '#payment-success';
+        } else {
+            window.location.hash = '#payment-failed';
+        }
+
+        // 메시지 전송
+        setTimeout(() => {
+            try {
+                const message = isSuccess ? "payment:success" : "payment:failed";
+
+                // iOS WKWebView
+                if (window.webkit?.messageHandlers?.paymentHandler) {
+                    window.webkit.messageHandlers.paymentHandler.postMessage(message);
+                    console.log("📩 iOS 메시지 전송:", message);
+                }
+
+                // Android WebView
+                if (window.Android?.onPaymentResult) {
+                    window.Android.onPaymentResult(message);
+                    console.log("📩 Android 메시지 전송:", message);
+                }
+
+                // Flutter InAppWebView
+                if (window.flutter_inappwebview?.callHandler) {
+                    window.flutter_inappwebview.callHandler('paymentResult', message);
+                    console.log("📩 Flutter 메시지 전송:", message);
+                }
+
+            } catch (e) {
+                console.error("📩 메시지 전송 실패:", e);
+            }
+        }, 100);
+    }
+
+    // DOM 로드 후 실행
+    class LoadingIndicator {
+        constructor() {
+            this.currentSpinner = 'basic';
+            this.init();
+        }
+
+        init() {
+            this.bindEvents();
+            this.showSpinner('basic');
+        }
+
+        bindEvents() {
+            const buttons = document.querySelectorAll('.spinner-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const target = e.target.dataset.target;
+                    this.switchSpinner(target);
+                });
+            });
+        }
+
+        switchSpinner(spinnerType) {
+            if (this.currentSpinner === spinnerType) return;
+
+            // 버튼 상태 업데이트
+            document.querySelectorAll('.spinner-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-target="${spinnerType}"]`).classList.add('active');
+
+            // 스피너 표시
+            this.showSpinner(spinnerType);
+            this.currentSpinner = spinnerType;
+        }
+
+        showSpinner(spinnerType) {
+            // 모든 스피너 숨기기
+            document.querySelectorAll('.spinner-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('active');
+                wrapper.style.display = 'none';
+            });
+
+            // 선택된 스피너 표시
+            const targetSpinner = document.querySelector(`[data-spinner="${spinnerType}"]`);
+            if (targetSpinner) {
+                targetSpinner.style.display = 'block';
+                targetSpinner.classList.add('active');
+            }
+        }
+
+        // 로딩 텍스트 변경
+        updateText(mainText, subText) {
+            const mainTextEl = document.querySelector('.loading-text');
+            const subTextEl = document.querySelector('.loading-subtext');
+
+            if (mainText && mainTextEl) {
+                mainTextEl.textContent = mainText;
+            }
+
+            if (subText && subTextEl) {
+                subTextEl.textContent = subText;
+            }
+        }
+
+        // 로딩 완료 후 페이지 이동
+        complete(redirectUrl, delay = 1000) {
+            this.updateText('완료!', '페이지로 이동합니다...');
+
+            setTimeout(() => {
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                }
+            }, delay);
+        }
+    }
+
+    // 초기화
+    const loadingIndicator = new LoadingIndicator();
+
+    // // 사용 예시 (3초 후 자동으로 완료 처리)
+    // setTimeout(() => {
+    //     loadingIndicator.complete('https://roomi.co.kr', 1500);
+    // }, 3000);
+
+    // 전역에서 사용할 수 있도록 window 객체에 추가
+    window.loadingIndicator = loadingIndicator;
+
+</script>
+</body>
+</html>

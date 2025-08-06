@@ -1,0 +1,82 @@
+.homeScreen.container {
+    width: 100%;
+    padding: 0 16px;
+}
+
+.homeScreen.room-content-container {
+    margin-top: 16px;
+}
+
+.homeScreen.accommodation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 👈 이 줄만 수정 */
+    gap: 24px;
+    margin: 0 auto;
+}
+
+.homeScreen.card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, 0.2s ease;
+    cursor: pointer;
+}
+
+.homeScreen.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.homeScreen.card-header {
+    position: relative;
+}
+
+.homeScreen.card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.homeScreen.card-content {
+    padding: 14px;
+}
+
+.homeScreen.price-container {
+    margin-bottom: 8px;
+}
+
+.homeScreen.price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+
+.homeScreen.title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 8px;
+    line-height: 22px;
+}
+
+.homeScreen.location {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.homeScreen.loading {
+    text-align: center;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.homeScreen.error {
+    text-align: center;
+    color: #ef4444;
+    font-size: 16px;
+}

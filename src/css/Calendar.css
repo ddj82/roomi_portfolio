@@ -1,0 +1,220 @@
+/*캘린더 기본*/
+.react-calendar {
+    border: none;
+    box-shadow: none;
+    background-color: white;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* 셀 간격 줄이기 */
+.react-calendar__tile {
+    padding: 5px 0; /* 더 줄임 */
+    height: 36px; /* 높이 더 줄임 */
+    position: relative; /* 위치 기준점 설정 */
+}
+
+/* 시작일 (체크인) */
+.react-calendar__tile.start-date {
+    background-color: transparent !important;
+    color: white !important;
+    position: relative;
+    z-index: 2;
+}
+
+.react-calendar__tile.start-date::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background-color: rgba(244, 115, 102, 0.2);
+    z-index: -2;
+}
+
+/* 종료일 (체크아웃) */
+.react-calendar__tile.end-date {
+    background-color: transparent !important;
+    color: white !important;
+    position: relative;
+    z-index: 2;
+}
+
+.react-calendar__tile.end-date::before,
+.react-calendar__tile.start-date::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 34px;
+    height: 34px;
+    background-color: #ff8282;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.react-calendar__tile.end-date::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-color: rgba(244, 115, 102, 0.2);
+    z-index: -2;
+    border-radius: 0 !important; /* Override any inherited border-radius */
+    -webkit-border-radius: 0 !important; /* For Safari/Chrome */
+    -moz-border-radius: 0 !important; /* For Firefox */
+}
+
+/* 범위 내 날짜 */
+.react-calendar__tile.in-range {
+    background-color: rgba(244, 115, 102, 0.2) !important;
+    color: black !important;
+    border-radius: 0 !important;
+}
+
+/* 지난 날짜 (비활성화) */
+.react-calendar__tile:disabled {
+    color: #d3d3d3 !important;
+    cursor: default !important;
+    background-color: white !important;
+}
+
+.react-calendar__navigation button:disabled {
+    background-color: transparent;
+}
+
+/*오늘*/
+.react-calendar__tile--now {
+    background: transparent;
+    font-weight: bold;
+}
+
+.react-calendar .react-calendar__tile--now:enabled:hover,
+.react-calendar .react-calendar__tile--now:enabled:focus {
+    background-color: #e6e6e6;
+}
+
+.react-calendar .react-calendar__tile:hover {
+    border-radius: 5px;
+}
+
+/*액티브, 액티브 호버, 액티브 포커스*/
+.react-calendar .react-calendar__tile--active,
+.react-calendar .react-calendar__tile--active:enabled:hover,
+.react-calendar .react-calendar__tile--active:enabled:focus {
+    background-color: inherit;
+    color: inherit;
+}
+
+/* 예약 날짜 */
+.react-calendar__tile.reservation-date {
+    position: relative;
+}
+
+.react-calendar__tile.reservation-date abbr {
+    text-decoration: line-through;
+    color: #ff8282;
+    font-weight: bold;
+}
+
+.react-calendar__tile.reservation-date {
+    pointer-events: none;
+}
+
+/* 체크인 가능 날짜 */
+.react-calendar__tile.checkInList {
+    position: relative;
+}
+
+.react-calendar__tile.checkInList::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    /*background-color: #ff8282;*/
+    border-radius: 50%;
+}
+
+/* 체크아웃 가능 날짜 */
+.react-calendar__tile.checkOutList {
+    position: relative;
+}
+
+.react-calendar__tile.checkOutList::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    /*background-color: #3498db;*/
+    border-radius: 50%;
+}
+.dateModal .react-calendar .react-calendar__tile--active {
+    color: white !important;
+}
+
+/*.dateModal .react-calendar .react-calendar__tile--active:enabled:hover abbr,*/
+/*.dateModal .react-calendar .react-calendar__tile--active:enabled:focus abbr {*/
+/*    background-color: #ff8282 !important;*/
+/*    color: white !important;*/
+/*    border-radius: 50%;*/
+/*    display: inline-flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    width: 32px;*/
+/*    height: 32px;*/
+/*    margin: auto;*/
+/*}*/
+
+.dateModal .react-calendar .selected-date abbr {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ff8282 !important;
+    color: white !important;
+    font-weight: bold;
+
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin: auto;
+}
+
+.dateModal .react-calendar .today-date {
+    background-color: #e0f2fe !important;
+    color: #0369a1 !important;
+    font-weight: bold;
+}
+
+.dateModal .react-calendar .original-checkout-date abbr {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffc7c2 !important;
+    color: #92400e !important;
+    font-weight: bold;
+
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin: auto;
+}
+
+.dateModal .react-calendar .selectable-date:enabled:hover,
+.dateModal .react-calendar .selectable-date:enabled:focus {
+    background-color: #fee2e2 !important;
+}
+
+.dateModal .react-calendar .disabled-date {
+    color: #d1d5db !important;
+    cursor: not-allowed !important;
+}

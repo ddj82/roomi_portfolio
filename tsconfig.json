@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "es6",                  // 코드가 변환될 JavaScript 버전
+    "module": "esnext",               // ES 모듈 시스템 사용
+    "lib": ["dom", "dom.iterable", "esnext"], // DOM과 최신 ES 기능 사용
+    "jsx": "react-jsx",               // React JSX 사용
+    "strict": true,                   // 엄격 모드 활성화
+    "esModuleInterop": true,          // ES 모듈 및 CommonJS 호환
+    "skipLibCheck": true,             // 라이브러리 타입 검사 건너뜀
+    "forceConsistentCasingInFileNames": true, // 대소문자 일관성 유지
+    "moduleResolution": "node",       // 모듈 탐색 방식 설정
+    "resolveJsonModule": true,        // JSON 모듈 가져오기 허용
+    "isolatedModules": true,          // 개별 모듈 컴파일 활성화
+    "baseUrl": ".",                   // 기본 경로 설정
+    "paths": {
+//      "@/*": ["src/*"],                 // 경로 별칭
+//      "@/components/*": ["src/components/*"],
+//      "@/app/*": ["src/app/*"],
+//      "@/assets/*": ["src/assets/*"],
+//      "@/constants/*": ["src/constants/*"],
+//      "@/api/*": ["src/api/*"],
+//      "@/types/*": ["src/types/*"],
+//      "@/locales/*": ["src/locales/*"],
+    }
+  },
+  "include": [
+    "src/**/*",                       // src 디렉토리의 모든 파일 포함
+    "**/*.ts",                        // TypeScript 파일 포함
+    "**/*.tsx",                       // TypeScript JSX 파일 포함
+    "src/types/*.d.ts" // 타입 정의 파일 포함
+  ],
+  "exclude": ["node_modules", "build"] // 제외 디렉토리 설정
+}

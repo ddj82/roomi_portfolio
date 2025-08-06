@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eximbay Payment</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+<div style="text-align: center; padding: 20px;">
+    <h2>결제 진행 중...</h2>
+    <div id="debug-info" style="text-align: left; padding: 10px; font-size: 12px; color: #666;"></div>
+    <div id="error-message" style="color: red; display: none;"></div>
+</div>
+
+<script>
+    const addDebugInfo = (msg) => {
+        const debugDiv = document.getElementById("debug-info");
+        const timestamp = new Date().toLocaleTimeString();
+        debugDiv.innerHTML += `[${timestamp}] ${msg}<br>`;
+        console.log(`[${timestamp}] ${msg}`);
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {
+        orderId: urlParams.get('orderId') || `ROOMI_${Date.now()}`,
+        amount: urlParams.get('amount') || "100",
+        currency: urlParams.get('currency') || "USD",
+        mid: urlParams.get('mid') || "1849705C64", // 테스트 MID
+        product: safeJson(urlParams.get('product'), {
+            name: "Roomi Stay",
+            quantity: 1,
+            unit_price: 100,
+            link: "https://roomi.co.kr"
+        }),
+        settings: safeJson(urlParams.get('settings'), {
+            issuer_country: "US"
+        })
+    };
+
+    function safeJson(value, fallback) {
+        try {
+            return value ? JSON.parse(value) : fallback;
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    const originalOpen = window.open;
+    window.open = function (url, name, features) {
+        addDebugInfo('팝업 URL 감지: ' + url);
+        if (window.flutter_inappwebview) {
+            window.flutter_inappwebview.callHandler('popupUrl', url);
+            return null;
+        }
+        return originalOpen(url, name, features); // 웹에서는 정상 팝업 열기
+    };
+
+    const loadEximbaySDK = () => {
+        return new Promise((resolve, reject) => {
+            const sdk = document.createElement('script');
+            sdk.src = "https://api-test.eximbay.com/v1/javascriptSDK.js";
+            sdk.onload = () => resolve();
+            sdk.onerror = () => reject("SDK 로드 실패");
+            document.head.appendChild(sdk);
+        });
+    };
+
+    const getFgkey = async () => {
+        const body = {
+            payment: {
+                transaction_type: "PAYMENT",
+                order_id: params.orderId,
+                currency: params.currency,
+                amount: params.amount,
+                lang: "KR",
+                payment_method: "P115"
+            },
+            merchant: {
+                mid: params.mid
+            },
+            buyer: {
+                name: "테스트 구매자",
+                email: "test@example.com"
+            },
+            url: {
+                return_url: "https://roomi.co.kr/payment/success", // 테스트용 실제 URL
+                status_url: "https://roomi.co.kr/payment/status"
+            },
+            product: [{
+                name: params.product.name,
+                quantity: params.product.quantity,
+                unit_price: params.product.unit_price,
+                link: params.product.link
+            }],
+            settings: {
+                call_from_app: "N", // 앱에서는 'Y'
+                display_type: "R",
+                issuer_country: params.settings.issuer_country,
+                ostype: "W"
+            }
+        };
+
+        addDebugInfo("▶️ Ready API 요청: " + JSON.stringify(body));
+
+        const res = await fetch("https://api-test.eximbay.com/v1/payments/ready", {
+            method: "POST",
+            headers: {
+                "Authorization": "Basic dGVzdF8xODQ5NzA1QzY0MkMyMTdFMEIyRDo=",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        });
+
+        const json = await res.json();
+        addDebugInfo("✅ fgkey 응답: " + JSON.stringify(json));
+
+        if (!json.fgkey) throw new Error("fgkey 없음");
+        return json.fgkey;
+    };
+
+    const startPayment = async () => {
+        try {
+            await loadEximbaySDK();
+            const fgkey = await getFgkey();
+
+            const paymentData = {
+                fgkey: fgkey,
+                payment: {
+                    transaction_type: "PAYMENT",
+                    order_id: params.orderId,
+                    currency: params.currency,
+                    amount: params.amount,
+                    lang: "KR",
+                },
+                merchant: {
+                    mid: params.mid
+                },
+                buyer: {
+                    name: "테스트 구매자",
+                    email: "test@example.com"
+                },
+                url: {
+                    return_url: "https://roomi.co.kr/payment/success",
+                    status_url: "https://roomi.co.kr/payment/status"
+                },
+                product: [{
+                    name: params.product.name,
+                    quantity: params.product.quantity,
+                    unit_price: params.product.unit_price,
+                    link: params.product.link
+                }],
+                settings: {
+                    call_from_app: "N",
+                    display_type: "R",
+                    issuer_country: params.settings.issuer_country,
+                    ostype: "W"
+                },
+                success: (res) => {
+                    addDebugInfo("🎉 결제 성공: " + JSON.stringify(res));
+                },
+                error: (err) => {
+                    addDebugInfo("❌ 결제 실패: " + JSON.stringify(err));
+                    document.getElementById("error-message").innerText =
+                        `결제 오류: ${err.message || '알 수 없는 오류'}`;
+                    document.getElementById("error-message").style.display = "block";
+                },
+                complete: (res) => {
+                    addDebugInfo("✔️ 결제 완료: " + JSON.stringify(res));
+                }
+            };
+
+            addDebugInfo("💳 EXIMBAY 결제 요청 시작");
+            EXIMBAY.request_pay(paymentData);
+        } catch (e) {
+            addDebugInfo("❌ 결제 실패 (예외): " + e.message);
+            document.getElementById("error-message").innerText = e.message;
+            document.getElementById("error-message").style.display = "block";
+        }
+    };
+
+    window.onload = () => {
+        addDebugInfo("🌐 페이지 로드 완료");
+        addDebugInfo("💡 전달된 파라미터: " + JSON.stringify(params));
+        startPayment();
+    };
+</script>
+</body>
+</html>

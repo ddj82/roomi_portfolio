@@ -1,0 +1,258 @@
+/* SearchModal.css */
+
+/* 모달 내용 (모달 내부 컨텐츠) */
+.overlay-searchBar {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: rgba(254, 254, 254, 0.9); /* 배경색 투명도 조정 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    backdrop-filter: blur(5px); /* 배경 블러 효과 추가 */
+}
+
+/* 모달 애니메이션 */
+.search-modal {
+    animation: modal-fade-in 0.3s ease-out forwards;
+    width: 100%;
+}
+
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 검색 카드 애니메이션 */
+.search-card {
+    transform-origin: top center;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+    background-color: rgba(255, 255, 255, 255) !important; /* 카드 배경 투명도 */
+    backdrop-filter: blur(10px); /* 카드 블러 효과 */
+}
+
+.search-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 카드 헤더 스타일 */
+.card-header {
+    background-color: rgba(255, 255, 255, 0.7); /* 헤더 배경 반투명 */
+    backdrop-filter: blur(5px); /* 헤더 블러 효과 */
+}
+
+/* 카드 접기/펼치기 애니메이션 */
+.search-card-collapsed {
+    max-height: 80px; /* 헤더의 높이만큼만 표시 */
+}
+
+@media (max-width: 640px) {
+    .search-card-collapsed {
+        max-height: 70px;
+    }
+}
+
+.search-card-content {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.2); /* 콘텐츠 영역 배경 투명도 */
+}
+
+.search-card-content.hidden {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.search-card-content.block {
+    opacity: 1;
+    max-height: 1000px; /* 충분히 큰 값으로 설정 */
+}
+
+/* 화살표 아이콘 회전 애니메이션 */
+.transform.rotate-180 {
+    transform: rotate(180deg);
+}
+
+/* 검색 입력 필드 스타일 */
+.search-input-container {
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.6) !important; /* 검색 입력 필드 배경 투명도 */
+}
+
+.search-input-container input {
+    background-color: transparent;
+}
+
+/* 간단한 검색바 스타일 */
+.search-simple-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 인기 목적지 항목 스타일 */
+.popular-locations .grid > div {
+    transition: all 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.6); /* 목적지 아이템 배경 투명도 */
+}
+
+/*.popular-locations .grid > div:hover {*/
+/*    background-color: rgba(249, 250, 251, 0.8); !* 호버 시 배경색 *!*/
+/*    border-color: #d1d5db;*/
+/*    transform: translateY(-2px);*/
+/*    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);*/
+/*}*/
+
+/* 인원 조절 버튼 */
+.guests-picker-container {
+    background-color: rgba(255, 255, 255, 0.6) !important; /* 게스트 픽커 배경 투명도 */
+}
+
+.guests-picker-container button {
+    transition: all 0.2s ease;
+}
+
+/*.guests-picker-container button:not(:disabled):hover {*/
+/*    border-color: #9ca3af;*/
+/*    background-color: rgba(249, 250, 251, 0.8);*/
+/*}*/
+
+.guests-picker-container button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 하단 검색 버튼 */
+.search-modal .fixed.bottom-0 {
+    /*background-color: rgba(255, 255, 255, 0.8) !important; !* 하단 버튼 영역 배경 투명도 *!*/
+    /*backdrop-filter: blur(8px); !* 하단 영역 블러 효과 *!*/
+    /*border-top: 1px solid rgba(229, 231, 235, 0.8);*/
+}
+
+.search-modal .fixed.bottom-0 button {
+    transition: all 0.2s ease;
+}
+
+/*.search-modal .fixed.bottom-0 button:hover {*/
+/*    transform: translateY(-1px);*/
+/*    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);*/
+/*}*/
+
+/* 날짜 선택 컴포넌트 스타일 조정 */
+.date-picker-container .date-modal {
+    width: 100%;
+    box-shadow: none !important;
+    padding: 0 !important;
+    background-color: rgba(255, 255, 255, 0.7) !important; /* 데이트 피커 배경 투명도 */
+}
+
+/* 검색 콘텐츠 영역 */
+.search-content {
+    padding-bottom: 80px;
+}
+
+/* 아이폰 안전 영역 대응 */
+.safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+    .search-modal {
+        padding-top: env(safe-area-inset-top);
+    }
+
+    .search-content {
+        padding-bottom: 100px;
+    }
+
+    .fixed.bottom-0 {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+}
+
+/* 작은 모바일 화면에 대한 스타일 */
+@media (max-width: 640px) {
+    .search-modal .container {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .search-card {
+        margin-bottom: 12px;
+    }
+
+    /*.card-header {*/
+    /*    padding: 12px !important;*/
+    /*}*/
+
+    .search-card-content {
+        padding: 12px !important;
+    }
+
+    .search-input-container {
+        margin-bottom: 12px;
+        padding: 10px !important;
+    }
+
+    .popular-locations .grid {
+        gap: 8px;
+        grid-template-columns: 1fr;
+    }
+
+    .popular-locations .grid > div {
+        padding: 10px;
+    }
+
+    .guests-picker-container {
+        padding: 12px !important;
+    }
+}
+
+/* 매우 작은 화면에 대한 스타일 (iPhone SE 등) */
+@media (max-width: 374px) {
+    .search-modal .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .card-header {
+        padding: 10px !important;
+    }
+
+    .search-card-content {
+        padding: 10px !important;
+    }
+
+    .search-input-container {
+        padding: 8px !important;
+    }
+
+    .guests-picker-container button {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    .guests-picker-container button span {
+        font-size: 14px;
+    }
+}
+
+/* SafeArea 지원 */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .search-modal {
+        padding-top: env(safe-area-inset-top);
+    }
+}

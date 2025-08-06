@@ -1,0 +1,70 @@
+.overlay {
+    background-color: transparent;
+}
+
+.guestsModal.modal-container {
+    width: 100%;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-height: 400px;
+}
+
+.guestsModal.guest-type-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.guestsModal.guest-type-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.guestsModal.guest-type-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.guestsModal.counter-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.guestsModal.counter-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    background-color: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+}
+
+.guestsModal.disabled-button {
+    opacity: 0.5;
+}
+
+.guestsModal.counter-button-text {
+    font-size: 18px;
+    color: #4b5563;
+}
+
+.guestsModal.counter-text {
+    font-size: 16px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.guestsModal.divider {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 12px 0;
+}

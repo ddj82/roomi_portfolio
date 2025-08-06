@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>본인인증 중...</title>
+    <script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+</head>
+<body>
+<h2 style="text-align: center; margin-top: 40px;">🔐 본인인증을 진행 중입니다...</h2>
+<script>
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        const userCode = params.get('userCode') || 'imp01154410';  // ✅ 언니 가맹점 코드
+        const merchantUid = params.get('merchantUid') || `roomi_cert_${Date.now()}`;
+        const company = params.get('company') || 'Roomi';
+        const successUrl = params.get('successUrl') || 'com.myno1214.roomi://verification-success';
+        const failUrl = params.get('failUrl') || 'com.myno1214.roomi://verification-fail';
+
+        const IMP = window.IMP;
+        IMP.init(userCode);
+
+        console.log('🚀 본인인증 자동 시작');
+        IMP.certification({
+            merchant_uid: merchantUid,
+            company: company,
+            min_age: 18,
+            carrier: '',  // 사용자 선택
+            name: '',     // 사용자 입력
+            phone: '' ,    // 사용자 입력
+            redirect_url : 'com.myno1214.roomi://verification-done', // 모바일 리다이렉트 URL
+            m_redirect_url : 'com.myno1214.roomi://verification-done'
+        }, function (rsp) {
+            console.log('📱 본인인증 결과:', rsp);
+
+            // if (rsp.success) {
+            //     const redirectUrl = new URL(successUrl);
+            //     redirectUrl.searchParams.set('success', 'true');
+            //     redirectUrl.searchParams.set('imp_uid', rsp.imp_uid);
+            //     redirectUrl.searchParams.set('merchant_uid', rsp.merchant_uid);
+            //     location.href = redirectUrl.toString();
+            // } else {
+            //     const redirectUrl = new URL(failUrl);
+            //     redirectUrl.searchParams.set('success', 'false');
+            //     redirectUrl.searchParams.set('error_msg', rsp.error_msg || '인증 실패');
+            //     redirectUrl.searchParams.set('merchant_uid', rsp.merchant_uid || merchantUid);
+            //     location.href = redirectUrl.toString();
+            // }
+        });
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+/* 전체 컨테이너 */
+.mainHome.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 콘텐츠 래퍼 */
+.mainHome.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    transition: transform 0.5s ease-in-out;
+}
+
+/* 목록 컨테이너 - 내용에 맞게 자동 조절 */
+.mainHome.list-container {
+    width: 100%;
+    height: auto; /* 목록 개수에 따라 높이 자동 조정 */
+    max-height: calc(100vh - 54px); /* 최대 높이 제한 (100vh 넘으면 스크롤) */
+    padding: 20px;
+    overflow-y: auto; /* 스크롤 가능하도록 설정 */
+    position: relative;
+    background: white;
+    transition: transform 0.5s ease-in-out;
+
+    /* 스크롤바 숨기기 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE, Edge */
+}
+/* 스크롤바 숨기기 */
+.mainHome.list-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+/* 지도 컨테이너 - 항상 고정된 높이 유지 */
+.mainHome.map-container {
+    position: absolute;
+    width: 100%;
+    height: calc(100vh - 54px);
+    bottom: 0;
+    left: 0;
+    transition: transform 0.5s ease-in-out;
+}
+
+/* 기본 상태 - 목록이 보이고 지도가 아래쪽에 숨겨짐 */
+.mainHome.show-list .mainHome.list-container {
+    transform: translateY(0);
+}
+
+.mainHome.show-list .mainHome.map-container {
+    transform: translateY(100%);
+    z-index: -1;
+}
+
+/* 지도 보기 상태 - 목록이 위로 사라지고 지도가 올라옴 */
+.mainHome.show-map .mainHome.list-container {
+    transform: translateY(-100%);
+    z-index: -1;
+}
+
+.mainHome.show-map .mainHome.map-container {
+    transform: translateY(0);
+}
+
+
+/*!* 전체 컨테이너 *!*/
+/*.mainHome.main-container {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*    background-color: #fff;*/
+/*    height: 100vh;*/
+/*    overflow: hidden;*/
+/*    position: relative;*/
+/*}*/
+
+/*!* 콘텐츠 래퍼 *!*/
+/*.mainHome.content-wrapper {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*    flex-grow: 1;*/
+/*    width: 100%;*/
+/*    margin: 0 auto;*/
+/*    position: relative;*/
+/*    height: 100vh;*/
+/*}*/
+
+/*!* 지도 컨테이너 *!*/
+/*.mainHome.map-container {*/
+/*    width: 100%;*/
+/*    !*height: calc(100vh - 54px); !* 상단 필터바 제외한 높이 *!*!*/
+/*    height: 100vh;*/
+/*    position: absolute;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    background-color: #fff;*/
+/*}*/
+
+/*!* 리스트 컨테이너 *!*/
+/*.mainHome.list-container {*/
+/*    width: 100%;*/
+/*    !*height: calc(100vh - 54px); !* 상단 필터바 제외한 높이 *!*!*/
+/*    height: 100vh;*/
+/*    position: absolute;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    background-color: #fff;*/
+/*    padding: 20px;*/
+/*    overflow-y: scroll;*/
+
+/*    !* 스크롤바 숨기기 *!*/
+/*    scrollbar-width: none; !* Firefox *!*/
+/*    -ms-overflow-style: none; !* IE, Edge *!*/
+/*}*/
+/*!* 스크롤바 숨기기 *!*/
+/*.mainHome.list-container::-webkit-scrollbar {*/
+/*    display: none; !* Chrome, Safari *!*/
+/*}*/
+
+/* 버튼 스타일 */
+.mainHome.toggle-button {
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    padding: 12px 24px;
+}

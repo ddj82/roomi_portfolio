@@ -1,0 +1,33 @@
+.overlay {
+    background-color: transparent;
+}
+
+.dateModal.modal-container {
+    width: 350px;
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2000;
+}
+
+.dateModal.header-text {
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.dateModal.confirm-button {
+    background-color: #ff8282;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-weight: 600;
+    border: none;
+}

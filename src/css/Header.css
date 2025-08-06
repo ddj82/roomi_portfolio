@@ -1,0 +1,65 @@
+/* Header.css */
+
+.h.header {
+    width: 100%;
+    position: relative;
+    flex-direction: column;
+}
+
+.h.top-row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.h.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.h.info-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #ff8282;
+}
+
+.h.search-bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.h.search-bar-row {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #E5E7EB;
+    border-radius: 5px;
+}
+
+.h.search-item {
+    background: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 30%;
+}
+
+.h.search-button {
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.h.modal-container {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
