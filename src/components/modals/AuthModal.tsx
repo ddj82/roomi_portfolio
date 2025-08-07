@@ -23,12 +23,12 @@ const AuthModal = ({ visible, onClose, type }: { visible: boolean; onClose: () =
 
     useEffect(() => {
         if (window.Kakao && !window.Kakao.isInitialized()) {
-            window.Kakao.init('b78ae2925790c4c5606a66f8d79dd7b0'); // 카카오 JavaScript 키로 초기화
+            window.Kakao.init('2a9ccad44e98e033cafdac8aa2935584'); // 카카오 JavaScript 키로 초기화
             console.log('✅ Kakao SDK initialized');
         }
-        // 토스 결제 심사 목적
-        // setEmail("admin");
-        // setPassword("admin");
+        // 모킹 데이터
+        setEmail("test");
+        setPassword("test");
     }, []);
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -104,45 +104,9 @@ const AuthModal = ({ visible, onClose, type }: { visible: boolean; onClose: () =
                 break;
             }
             case 'Line': {
-                try {
-                    console.log("라인로그인시작");
-                    loginResult = await SocialAuth.lineLogin();
-                    console.log(loginResult);
-                    onClose(); // 모달만 닫아주기
-                    // try {
-                    //     statusCode = await validateUser(googleData.socialId, googleData.provider);
-                    //     console.log('statusCode', statusCode);
-                    //     socialEmail = googleData.email;
-                    //     socialName = googleData.name;
-                    //     socialChannelUid = googleData.socialId;
-                    //     socialChannel = googleData.provider;
-                    //
-                    //     if (statusCode === 409) {
-                    //         // 회원가입
-                    //         navigate('/join/social', {
-                    //             state : {
-                    //                 socialEmail,
-                    //                 socialName,
-                    //                 socialChannel,
-                    //                 socialChannelUid,
-                    //             },
-                    //         })
-                    //     } else if (statusCode === 200) {
-                    //         // 소셜 로그인
-                    //         await SocialLogin(socialChannelUid, socialChannel, setAuthToken, setIsHost, connect);
-                    //         window.location.reload();
-                    //     }
-                    // } catch (e) {
-                    //
-                    // }
-                } catch (error) {
-                    console.error('LINE 로그인 에러:', error);
-                    alert('로그인 시도 중 문제가 발생했습니다. 다시 시도해주세요.');
-                }
                 break;
             }
             case 'WeChat': {
-                loginResult = await SocialAuth.weiboLogin(); // Adjust for WeChat login if needed
                 break;
             }
             default:
@@ -171,17 +135,12 @@ const AuthModal = ({ visible, onClose, type }: { visible: boolean; onClose: () =
     const isAndroid = /Android/i.test(navigator.userAgent);
     const platforms = ['Kakao', 'Google', 'Line', 'Facebook', 'Apple', 'WeChat'];
 
-    const visiblePlatforms = isIOS
-        ? platforms.filter(p => ['Kakao', 'Google', 'Line', 'Apple'].includes(p))
-        : platforms.filter(p => ['Kakao', 'Google', 'Line'].includes(p)); // Apple 제외
+    const visiblePlatforms =  platforms.filter(p => ['Kakao', 'Google'].includes(p)); // Apple 제외
 
     return (
         <CommonModal
             isOpen={visible}
             onRequestClose={onClose}
-            // contentLabel="Authentication Modal"
-            // className="authModal auth-modal-container"
-            // overlayClassName="authModal overlay" // 오버레이 스타일
             title="로그인"
         >
             <div className="authModal modal-content">

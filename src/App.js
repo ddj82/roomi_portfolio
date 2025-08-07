@@ -23,7 +23,6 @@ import SocialJoinScreen from "./components/screens/SocialJoinScreen";
 import {useHeaderVisibility} from "./components/stores/HeaderStore";
 import {useHostHeaderBtnVisibility} from "./components/stores/HostHeaderBtnStore";
 import MyRoomUpdate from "./components/hostMenu/myRooms/MyRoomUpdate";
-import LoginPage from "./components/screens/link/LoginPage";
 import LineLoginCallback from "./components/util/LineLoginCallback";
 import Main from "./components/screens/Main";
 import MobileHostHeader from "./components/header/MobileHostHeader";
@@ -94,7 +93,7 @@ function AppContent() {
                         <Route path="/sign-up" element={<KakaoLoginCallback/>}/>
                         <Route path="/sign-up/line" element={<LineLoginCallback/>}/>
                         <Route path="/join/social" element={<SocialJoinScreen/>}/>
-                        <Route path="/login" element={<LoginPage/>}/>
+                        {/*<Route path="/login" element={<LoginPage/>}/>*/}
                         {/* 로그인 사용자 만 접근 가능 */}
                         <Route element={<ProtectedAuthRoute />}>
                             <Route path="/myPage" element={<GuestMyPage/>}/>

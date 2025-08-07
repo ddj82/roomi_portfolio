@@ -1,18 +1,16 @@
-// src/firebase.ts
-
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import type { FirebaseApp } from "firebase/app";
 import type { Auth } from "firebase/auth";
 
-// Firebase 설정
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyBDa9AIB7cECnTSHfyCLR2bR6M9saqo1Eg",
-    authDomain: "roomi-47ff8.firebaseapp.com",
-    projectId: "roomi-47ff8",
-    storageBucket: "roomi-47ff8.firebasestorage.app",
-    messagingSenderId: "370374815502",
-    appId: "1:370374815502:web:785339f10f846479f7715f",
+    apiKey: "AIzaSyCN7UBRXun1J48sJrFBAgp3_VDsQDt3JXE",
+    authDomain: "djportfolio-b5afb.firebaseapp.com",
+    projectId: "djportfolio-b5afb",
+    storageBucket: "djportfolio-b5afb.firebasestorage.app",
+    messagingSenderId: "531573945445",
+    appId: "1:531573945445:web:34dca823347a970312428c"
 };
 
 // Firebase 초기화

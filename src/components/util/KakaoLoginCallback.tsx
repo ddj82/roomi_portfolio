@@ -17,7 +17,7 @@ export default function KakaoLoginCallback() {
 
     useEffect(() => {
         const code = new URL(window.location.href).searchParams.get("code");
-        // console.log('code', code);
+        console.log('code', code);
         if (!code) {
             navigate('/');
         } else  {
@@ -79,14 +79,14 @@ export default function KakaoLoginCallback() {
 
     const Login = async (data: any) => {
         try {
-            // console.log('카카오 :',data);
-            // console.log('카카오 유저id:', data.id.toString());
+            console.log('카카오 :',data);
+            console.log('카카오 유저id:', data.id.toString());
 
             const socialChannelUid = data.id.toString();
             const socialChannel = 'kakao';
             const statusCode = await validateUser(socialChannelUid, socialChannel);
 
-            // console.log("statusCode",statusCode);
+            console.log("statusCode",statusCode);
 
             if (statusCode === 409) {
                 // 회원가입

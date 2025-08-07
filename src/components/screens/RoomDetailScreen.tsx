@@ -945,8 +945,8 @@ export default function RoomDetailScreen() {
 
                                 <div
                                     className="h-60 md:h-80 rounded-lg overflow-hidden shadow-sm border border-gray-100">
-                                    {/*<NaverMapRoom room={room}/>*/}
-                                    <GoogleMapRoom room={room}/>
+                                    <NaverMapRoom room={room}/>
+                                    {/*<GoogleMapRoom room={room}/>*/}
                                 </div>
                             </div>
 

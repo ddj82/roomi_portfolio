@@ -60,6 +60,7 @@ const RoomScrollList: React.FC<RoomScrollListProps> = ({ rooms }) => {
 
     // 스크롤 이벤트 리스너
     useEffect(() => {
+        console.log('모든공간 리스트', rooms);
         const container = scrollContainerRef.current;
         if (container) {
             container.addEventListener('scroll', checkScrollButtons);

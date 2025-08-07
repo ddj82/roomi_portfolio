@@ -3,11 +3,9 @@ import i18n from "src/i18n";
 import {RoomFormData, Schedules} from "../types/rooms";
 import {User} from "../types/user";
 import {Reservation} from "../types/reservation";
-import axios from "axios";
-import qs from "qs";
-import exp from "node:constants";
 
-const BASE_URL = 'https://roomi.co.kr/api';
+// const BASE_URL = 'https://roomi.co.kr/api';
+const BASE_URL = '';
 
 // 로컬 스토리지에서 인증 토큰 가져오기
 const getAuthToken = () => {
@@ -230,11 +228,6 @@ export const mainRoomData = async (swY: number, swX: number, neY: number, neX: n
 };
 
 // 방 조회 API
-// export const roomData = async () => {
-//
-// };
-
-// 방 조회 API
 export const fetchRoomData = async (id: number) => {
     const locale = i18n.language;
     const currency = localStorage.getItem("userCurrency") ?? "KRW";
@@ -273,6 +266,7 @@ export const be_host = async (hostModeAgreeForm: {
 export const myRoomList = async () => {
     return request(`/rooms/my/list`, true, 'GET', undefined, true);
 };
+
 // 호스트모드 계약 관리 API
 export const myContractList = async () => {
     return request(`/rooms/host/history`, true, 'GET', undefined, true);
@@ -314,10 +308,12 @@ export const getValidationCode = async (email: string) => {
 export const addFavoriteRoom = async (roomId: number) => {
     return request(`/rooms/favorite/${roomId}`, true, 'POST');
 };
+
 // 찜 제거 API
 export const deleteFavoriteRoom = async (roomId: number) => {
     return request(`/rooms/favorite/${roomId}`, true, 'DELETE');
 };
+
 // 찜 목록 API
 export const getRoomFavoriteList = async () => {
     return request(`/rooms/favorite/list`, true, 'GET', undefined,true);
@@ -327,6 +323,7 @@ export const getRoomFavoriteList = async () => {
 export const addRoomHistory = async (roomId: number) => {
     return request(`/rooms/history/${roomId}`, true, 'POST');
 };
+
 // 최근 본 방 목록 API
 export const getRoomHistoryList = async () => {
     return request(`/rooms/history/list`, true, 'GET', undefined,true);
@@ -416,6 +413,7 @@ export const bookReservation = async (reservation: Reservation) => {
         true
     );
 };
+
 export const getReservation = async (reservationId: number) => {
     return request(
         `/book/reservation?reservationId=${reservationId}`,
@@ -424,6 +422,7 @@ export const getReservation = async (reservationId: number) => {
 
     );
 };
+
 // 게스트 예약내역 API
 export const getReservationHistory = async () => {
     return request(`/rooms/my/history`, true, 'GET', undefined, true);

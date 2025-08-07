@@ -8,7 +8,6 @@ import {mainPopularRegion} from "../../types/MainSlideList";
 import MainSlides from "../util/MainSlides";
 import {useQuery} from "@tanstack/react-query";
 import MainBannerSlide from "../util/MainBannerSlide";
-import {useNavigate} from "react-router-dom";
 
 interface MainProps {
     rooms: RoomData[];
@@ -27,8 +26,8 @@ const useRoomData = () => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
             const result: ApiResponse = await response.json();
+            console.log('방 데이터', result);
             return result.data?.items || [];
         },
         staleTime: 5 * 60 * 1000, // 5분간 캐시된 데이터를 fresh로 간주
