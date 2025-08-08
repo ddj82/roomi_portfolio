@@ -1,0 +1,40 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      # 환경변수 파일 생성 (GitHub Secrets 사용)
+      - name: Create .env file
+        run: |
+          echo "REACT_APP_GOOGLE_MAP_API_KEY=${{ secrets.REACT_APP_GOOGLE_MAP_API_KEY }}" >> .env
+          echo "REACT_APP_REST_API_KEY=${{ secrets.REACT_APP_REST_API_KEY }}" >> .env
+
+      - name: Build
+        run: npm run build
+        env:
+          CI: false  # 경고를 에러로 처리하지 않음
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.TOKEN }}  # ← 이 부분이 수정됨!
+          publish_dir: ./build
