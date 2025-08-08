@@ -123,6 +123,10 @@ export default function HeaderOneLine() {
         toggleCard('date');
     };
 
+    const getPublicUrl = (path: string) => {
+        return `${process.env.PUBLIC_URL ?? ''}${path}`;
+    };
+
     return (
         <>
             <div className="h-20"/>
@@ -133,7 +137,11 @@ export default function HeaderOneLine() {
                             {/* 로고 영역 */}
                             <div className="h logo-container">
                                 <button onClick={handleLogo}>
-                                    <img src="/assets/images/roomi.png" alt="Logo" className="md:h-10 h-6"/>
+                                    <img
+                                        src={getPublicUrl("/assets/images/roomi.png")}
+                                        alt="Logo"
+                                        className="md:h-10 h-6"
+                                    />
                                 </button>
                             </div>
 
