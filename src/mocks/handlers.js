@@ -1,9 +1,5 @@
 import { http, HttpResponse } from 'msw'
 
-const getPublicUrl = (path) => {
-    return `${process.env.PUBLIC_URL || ''}${path}`;
-};
-
 // 모킹 데이터 - 여러 개의 숙소 데이터
 const mockRoomsData = [
     {
@@ -35,12 +31,12 @@ const mockRoomsData = [
         deposit_week: 300000,
         description: "오래된 아파트지만 제가 혼자 살았던곳이라 깔끔한 공간을 대여합니다~\n\n혼자 또는 둘이서 여행하기 좋은곳\n무료주차가능(4주이상등록)\n서울과 가깝고 역과 가까워 어디든 출발~\n한달살기 추천합니다",
         detail_urls: [
-            getPublicUrl('/assets/images/room/img1.jpg'),
-            getPublicUrl('/assets/images/room/img2.jpg'),
-            getPublicUrl('/assets/images/room/img3.jpg'),
-            getPublicUrl('/assets/images/room/img4.jpg'),
-            getPublicUrl('/assets/images/room/img5.jpg'),
-            getPublicUrl('/assets/images/room/img6.jpg'),
+            '/assets/images/room/img1.jpg',
+            '/assets/images/room/img2.jpg',
+            '/assets/images/room/img3.jpg',
+            '/assets/images/room/img4.jpg',
+            '/assets/images/room/img5.jpg',
+            '/assets/images/room/img6.jpg',
         ],
         discounts: [
             {type: 'weekly', days: 7, percentage: 0},
@@ -136,12 +132,12 @@ const mockRoomsData = [
         deposit_week: 300000,
         description: "오래된 아파트지만 제가 혼자 살았던곳이라 깔끔한 공간을 대여합니다~\n\n혼자 또는 둘이서 여행하기 좋은곳\n무료주차가능(4주이상등록)\n서울과 가깝고 역과 가까워 어디든 출발~\n한달살기 추천합니다",
         detail_urls: [
-            getPublicUrl('/assets/images/room/img1.jpg'),
-            getPublicUrl('/assets/images/room/img2.jpg'),
-            getPublicUrl('/assets/images/room/img3.jpg'),
-            getPublicUrl('/assets/images/room/img4.jpg'),
-            getPublicUrl('/assets/images/room/img5.jpg'),
-            getPublicUrl('/assets/images/room/img6.jpg'),
+            '/assets/images/room/img1.jpg',
+            '/assets/images/room/img2.jpg',
+            '/assets/images/room/img3.jpg',
+            '/assets/images/room/img4.jpg',
+            '/assets/images/room/img5.jpg',
+            '/assets/images/room/img6.jpg',
         ],
         discounts: [
             {type: 'weekly', days: 7, percentage: 0},
@@ -237,12 +233,12 @@ const mockRoomsData = [
         deposit_week: 300000,
         description: "오래된 아파트지만 제가 혼자 살았던곳이라 깔끔한 공간을 대여합니다~\n\n혼자 또는 둘이서 여행하기 좋은곳\n무료주차가능(4주이상등록)\n서울과 가깝고 역과 가까워 어디든 출발~\n한달살기 추천합니다",
         detail_urls: [
-            getPublicUrl('/assets/images/room/img1.jpg'),
-            getPublicUrl('/assets/images/room/img2.jpg'),
-            getPublicUrl('/assets/images/room/img3.jpg'),
-            getPublicUrl('/assets/images/room/img4.jpg'),
-            getPublicUrl('/assets/images/room/img5.jpg'),
-            getPublicUrl('/assets/images/room/img6.jpg'),
+            '/assets/images/room/img1.jpg',
+            '/assets/images/room/img2.jpg',
+            '/assets/images/room/img3.jpg',
+            '/assets/images/room/img4.jpg',
+            '/assets/images/room/img5.jpg',
+            '/assets/images/room/img6.jpg',
         ],
         discounts: [
             {type: 'weekly', days: 7, percentage: 0},

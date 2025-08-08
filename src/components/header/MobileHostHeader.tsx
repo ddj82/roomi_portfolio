@@ -91,10 +91,6 @@ const MobileHostHeader: React.FC = () => {
         };
     }, [userVisible]);
 
-    const getPublicUrl = (path: string) => {
-        return `${process.env.PUBLIC_URL ?? ''}${path}`;
-    };
-
     return (
         <>
             {/* 모바일 호스트 헤더 */}
@@ -110,7 +106,7 @@ const MobileHostHeader: React.FC = () => {
                     <div>
                         <button onClick={handleLogo}>
                             <img
-                                src={getPublicUrl("/assets/images/roomi.png")}
+                                src="/assets/images/roomi.png"
                                 alt="Logo"
                                 className="h-6"
                             />

@@ -137,10 +137,6 @@ const AuthModal = ({ visible, onClose, type }: { visible: boolean; onClose: () =
 
     const visiblePlatforms =  platforms.filter(p => ['Kakao', 'Google'].includes(p)); // Apple 제외
 
-    const getPublicUrl = (path: string) => {
-        return `${process.env.PUBLIC_URL ?? ''}${path}`;
-    };
-
     return (
         <CommonModal
             isOpen={visible}
@@ -186,7 +182,7 @@ const AuthModal = ({ visible, onClose, type }: { visible: boolean; onClose: () =
                                     onClick={() => handleSocialLogin(channel)}
                                 >
                                     <img
-                                        src={getPublicUrl(`/assets/images/${channel.toLowerCase()}.png`)}
+                                        src={`/assets/images/${channel.toLowerCase()}.png`}
                                         alt={channel}
                                         className="authModal social-icon"
                                     />

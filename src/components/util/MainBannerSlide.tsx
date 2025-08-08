@@ -38,10 +38,6 @@ export default function MainBannerSlide() {
         return result;
     };
 
-    const getPublicUrl = (path: string) => {
-        return `${process.env.PUBLIC_URL ?? ''}${path}`;
-    };
-
     return (
         <div
             className="relative w-full overflow-hidden rounded-xl bg-white"
@@ -57,7 +53,7 @@ export default function MainBannerSlide() {
                     >
                         <div className="relative w-full" style={{ aspectRatio: '1477/309' }}>
                             <img
-                                src={getPublicUrl(banner.image)}
+                                src={banner.image}
                                 alt={`banner-${index}`}
                                 className="w-full h-full object-contain bg-gray-50"
                             />
@@ -79,7 +75,7 @@ export default function MainBannerSlide() {
                         >
                             <div className="relative w-full" style={{ aspectRatio: '1477/309' }}>
                                 <img
-                                    src={getPublicUrl(banner.image)}
+                                    src={banner.image}
                                     alt={`banner-${index}`}
                                     className="w-full h-full object-contain bg-gray-50"
                                 />
