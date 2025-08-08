@@ -263,7 +263,7 @@ export default function GuestMyPage() {
                 <div className="bg-white border-b border-gray-200 p-4">
                     <div className="flex items-center justify-between">
                         <button
-                            onClick={() => window.location.href = '/'}
+                            onClick={() => navigate('/')}
                             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
                         >
                             <X className="w-6 h-6 text-gray-700"/>
