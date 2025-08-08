@@ -1,18 +1,18 @@
 {
   "files": {
     "main.css": "/roomi_portfolio/static/css/main.b7b58594.css",
-    "main.js": "/roomi_portfolio/static/js/main.511e7159.js",
+    "main.js": "/roomi_portfolio/static/js/main.13c681d4.js",
     "static/js/209.8a9ba7e1.chunk.js": "/roomi_portfolio/static/js/209.8a9ba7e1.chunk.js",
     "static/js/816.61ce71b3.chunk.js": "/roomi_portfolio/static/js/816.61ce71b3.chunk.js",
     "static/media/Inter-Variable.ttf": "/roomi_portfolio/static/media/Inter-Variable.e05c5f3d1fa6a3893d84.ttf",
     "index.html": "/roomi_portfolio/index.html",
     "main.b7b58594.css.map": "/roomi_portfolio/static/css/main.b7b58594.css.map",
-    "main.511e7159.js.map": "/roomi_portfolio/static/js/main.511e7159.js.map",
+    "main.13c681d4.js.map": "/roomi_portfolio/static/js/main.13c681d4.js.map",
     "209.8a9ba7e1.chunk.js.map": "/roomi_portfolio/static/js/209.8a9ba7e1.chunk.js.map",
     "816.61ce71b3.chunk.js.map": "/roomi_portfolio/static/js/816.61ce71b3.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b7b58594.css",
-    "static/js/main.511e7159.js"
+    "static/js/main.13c681d4.js"
   ]
 }
