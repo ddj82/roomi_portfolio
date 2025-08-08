@@ -1,5 +1,11 @@
 name: Deploy to GitHub Pages
 
+# 권한 설정 추가
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 on:
   push:
     branches:
@@ -36,5 +42,5 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.TOKEN }}  # ← 이 부분이 수정됨!
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # ← 기본 토큰 사용
           publish_dir: ./build
