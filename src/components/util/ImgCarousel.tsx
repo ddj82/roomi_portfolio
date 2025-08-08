@@ -62,6 +62,10 @@ const ImgCarousel: React.FC<CarouselProps> = ({ images, customClass = "", custom
         setCurrentIndex(index);
     };
 
+    const getPublicUrl = (path: string) => {
+        return `${process.env.PUBLIC_URL ?? ''}${path}`;
+    };
+
     return (
         <div id="carousel" className="relative w-full"
              onTouchStart={handleTouchStart}
@@ -75,7 +79,7 @@ const ImgCarousel: React.FC<CarouselProps> = ({ images, customClass = "", custom
                             index === currentIndex ? "opacity-100" : "opacity-0"
                         }`}
                     >
-                        <img src={src}
+                        <img src={getPublicUrl(src)}
                              className={`block w-full h-full object-cover`}
                              style={{ aspectRatio: "16 / 9" }}
                              alt={`Slide ${index + 1}`}/>

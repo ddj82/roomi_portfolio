@@ -111,6 +111,10 @@ const Header = () => {
         setLanguageSetModal(true);
     };
 
+    const getPublicUrl = (path: string) => {
+        return `${process.env.PUBLIC_URL ?? ''}${path}`;
+    };
+
     return (
         <>
             {/* 기본 헤더 */}
@@ -125,7 +129,11 @@ const Header = () => {
                                 {/* 로고 영역 */}
                                 <div className="h logo-container">
                                     <button onClick={handleLogo}>
-                                        <img src="/assets/images/roomi.png" alt="Logo" className="md:h-10 h-6"/>
+                                        <img
+                                            src={getPublicUrl("/assets/images/roomi.png")}
+                                            alt="Logo"
+                                            className="md:h-10 h-6"
+                                        />
                                     </button>
                                 </div>
 
@@ -156,7 +164,7 @@ const Header = () => {
                             {isVisible && (
                                 <div className="h search-bar-container w-full flex justify-center mb-8">
                                     <img
-                                        src="/assets/images/thumbnail.png"
+                                        src={getPublicUrl("/assets/images/thumbnail.png")}
                                         alt="Roomi 캐릭터"
                                         className={`h-12 md:h-20 mr-30 md:mr-50`}
                                     />

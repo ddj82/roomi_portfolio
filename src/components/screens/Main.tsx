@@ -100,6 +100,10 @@ const Main: React.FC<MainProps> = () => {
         return <div className="homeScreen error">문제가 발생했습니다. 새로고침 해주세요.</div>;
     }
 
+    const getPublicUrl = (path: string) => {
+        return `${process.env.PUBLIC_URL ?? ''}${path}`;
+    };
+
     return (
         <div className="p-4">
             <div className="mb-6">
@@ -148,7 +152,7 @@ const Main: React.FC<MainProps> = () => {
                                 <div key={index} className="relative">
                                     <div>
                                         <img
-                                            src={region.image}
+                                            src={getPublicUrl(region.image)}
                                             alt={region.title}
                                             loading="lazy"
                                             className="rounded-lg w-40 h-36 md:w-52 md:h-48"
