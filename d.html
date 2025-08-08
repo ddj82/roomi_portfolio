@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+<button id="payButton" style="display:none;" onclick="requestPayment()">자동 결제</button>
+<script>
+    // URL 파라미터 추출 함수
+    function getQueryParams() {
+        const params = {};
+        const query = window.location.search.substring(1);
+        const pairs = query.split('&');
+
+        for (let i = 0; i < pairs.length; i++) {
+            const pair = pairs[i].split('=');
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+        }
+
+        return params;
+    }
+
+    const clientKey = "test_ck_ALnQvDd2VJ62j1xJBMWYVMj7X41m";
+    const customerKey = "FuASvtElaPrhsxwsQ73BT";
+    const tossPayments = TossPayments(clientKey);
+    const payment = tossPayments.payment({ customerKey });
+
+    // URL에서 파라미터 가져오기
+    const queryParams = getQueryParams();
+
+    async function requestPayment() {
+        await payment.requestPayment({
+            method: "CARD",
+            amount: {
+                currency: "KRW",
+                value: parseInt(queryParams.amount) || 1000,
+            },
+            orderId: queryParams.orderId || "lfxoQD3pvARrXfRDJoMHx",
+            orderName: queryParams.orderName || "토스 티셔츠 외 2건",
+            successUrl: queryParams.successUrl || window.location.origin + "/success.html",
+            failUrl: queryParams.failUrl || window.location.origin + "/fail.html",
+            customerEmail: "customer123@gmail.com",
+            customerName: "김토스",
+            customerMobilePhone: "01012341234",
+            card: {
+                useEscrow: false,
+                flowMode: "DEFAULT",
+                useCardPoint: false,
+                useAppCardOnly: true,
+            },
+        });
+    }
+
+    window.onload = function() {
+        let button = document.getElementById("payButton");
+        button.style.display = "block"; // 버튼을 일시적으로 표시
+        button.focus();
+        button.click(); // 강제로 클릭 이벤트 실행
+        button.style.display = "none"; // 다시 숨김
+    };
+</script>
+</body>
+</html>

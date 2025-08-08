@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>포트원 결제</title>
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            /*background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);*/
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: transparent;
+            /*border-radius: 20px;*/
+            padding: 40px;
+            /*box-shadow: 0 20px 40px rgba(0,0,0,0.1);*/
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #FF8282;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #FF8282;
+            font-size: 16px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        #debug-info {
+            text-align: left;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border-left: 4px solid #FF8282;
+        }
+
+        #error-message {
+            color: #FF8282;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #f3f3f3;
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF8282, #FF8282);
+            border-radius: 2px;
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!--    <h2>💳 결제 진행 중...</h2>-->
+
+    <div class="spinner"></div>
+
+    <!--    <div class="loading-text pulse">-->
+    <!--        결제 창을 준비하고 있습니다-->
+    <!--    </div>-->
+
+    <!--    <div class="progress-bar">-->
+    <!--        <div class="progress-fill"></div>-->
+    <!--    </div>-->
+
+    <div id="debug-info" style="display: none;"></div>
+    <div id="error-message"></div>
+</div>
+
+<script>
+    function addDebugInfo(message) {
+        const debugDiv = document.getElementById('debug-info');
+        const timestamp = new Date().toLocaleTimeString();
+        debugDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+        debugDiv.scrollTop = debugDiv.scrollHeight;
+        console.log(`[${timestamp}] ${message}`);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {
+        orderId: urlParams.get('orderId') || `order_${Date.now()}`,
+        amount: parseInt(urlParams.get('amount')) || 1000,
+        buyerName: urlParams.get('buyerName') || "홍길동",
+        buyerEmail: urlParams.get('buyerEmail') || "test@example.com",
+        buyerTel: urlParams.get('buyerTel') || "01012345678",
+        buyerAddr: urlParams.get('buyerAddr') || "서울특별시 강남구",
+        redirectUrl: urlParams.get('redirectUrl') || "com.myno1214.roomi://result",
+        channelKey: urlParams.get('channelKey') || "channel-key-14a7fa72-0d06-4bb5-9502-f721b189eb86",
+        storeId: urlParams.get('storeId') || "store-7bb98274-0fb5-4b2e-8d60-d3bff2f3ca85",
+
+        orderName: urlParams.get('orderName') || "테스트 결제 상품",
+
+
+    };
+
+    window.onload = function () {
+        setTimeout(() => {
+            startPayment();
+        }, 1000);
+    };
+
+    function startPayment() {
+        const paymentRequest = {
+            storeId: params.storeId,
+            paymentId: params.orderId,
+            channelKey: params.channelKey,
+            payMethod: 'CARD',
+            orderName: params.orderName,
+            totalAmount: params.amount,
+            // totalAmount: '1000',// 테스트용으로 고정 금액 사용
+            currency: "KRW",
+            customer: {
+                customerId: params.buyerTel,
+                fullName: params.buyerName,
+                phoneNumber: params.buyerTel,
+                email: params.buyerEmail,
+            },
+            redirectUrl: params.redirectUrl,
+            m_redirect_url: params.redirectUrl,
+        };
+
+        PortOne.requestPayment(paymentRequest)
+            .then(result => {
+                // 성공 메시지 표시
+                // document.querySelector('.loading-text').innerHTML = '✅ 결제가 완료되었습니다!';
+                document.querySelector('.spinner').style.display = 'none';
+
+                setTimeout(() => {
+                    if (result.code === 'PAYMENT_COMPLETED') {
+                        window.location.href = `${params.redirectUrl}?success=true&paymentKey=${result.paymentKey}`;
+                    }
+                }, 2000);
+            })
+            .catch(error => {
+                // 에러 UI 업데이트
+                document.querySelector('.spinner').style.display = 'none';
+                // document.querySelector('.loading-text').innerHTML = '❌ 결제 처리 중 오류가 발생했습니다';
+
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.textContent = `결제 실패: ${error.message || 'Unknown error'}`;
+                errorDiv.style.display = 'block';
+
+                // 3초 후 재시도 버튼 표시
+                setTimeout(() => {
+                    errorDiv.innerHTML += '<br><button onclick="location.reload()" style="margin-top:10px; padding:8px 16px; background:#F8282A; color:white; border:none; border-radius:5px; cursor:pointer;">다시 시도</button>';
+                }, 3000);
+            });
+    }
+</script>
+</body>
+</html>

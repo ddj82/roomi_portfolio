@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>ROOMMATES Co.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isAndroid = userAgent.includes("android");
+        const isIOS = /iphone|ipad|ipod/.test(userAgent);
+        const isMobile = isAndroid || isIOS;
+
+        const iosScheme = "com.myno1214.roomi://";
+        const iosAppStore = "https://apps.apple.com/app/id6739731240";
+        const androidIntent = "intent://#Intent;scheme=com.myno1214.roomi;package=com.myno1214.roomi;end";
+        const androidPlayStore = "https://play.google.com/store/apps/details?id=com.myno1214.roomi";
+        const webUrl = "https://roomi.co.kr";
+
+        const getQueryParam = (name) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        };
+
+        window.onload = async () => {
+            const route = getQueryParam("route") || "unknown";
+
+            try {
+                // ✅ POST 요청, 쿼리 스트링으로 전달
+                await fetch(`https://roomi.co.kr/api/tracking?route=${encodeURIComponent(route)}`, {
+                    method: "POST",
+                });
+            } catch (e) {
+                console.warn("유입 경로 전송 실패:", e);
+            }
+
+            // 웹 브라우저인 경우 roomi.co.kr로 리다이렉트
+            if (!isMobile) {
+                window.location.href = webUrl;
+                return;
+            }
+
+            // 모바일 앱 실행 시도
+            if (isAndroid) {
+                window.location.href = androidIntent;
+                setTimeout(() => {
+                    window.location.href = androidPlayStore;
+                }, 2000);
+            } else if (isIOS) {
+                const iframe = document.createElement("iframe");
+                iframe.style.display = "none";
+                iframe.src = iosScheme;
+                document.body.appendChild(iframe);
+
+                setTimeout(() => {
+                    window.location.href = iosAppStore;
+                }, 2000);
+            }
+        };
+    </script>
+</head>
+<body>
+<!-- 리다이렉트 전 표시될 내용 -->
+<div style="text-align: center; padding: 20px; font-family: sans-serif;">
+    <h1>ROOMMATES Co.</h1>
+    <p>잠시만 기다려주세요. 이동 중입니다...</p>
+</div>
+</body>
+</html>

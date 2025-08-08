@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이니시스 해외카드 전용 결제</title>
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .title {
+            text-align: center;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+        .card-guide {
+            background: #e3f2fd;
+            border: 1px solid #1976d2;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .card-guide h4 {
+            color: #1976d2;
+            margin: 0 0 10px 0;
+        }
+        .card-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .card-brand {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        #debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            font-size: 12px;
+            color: #495057;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        #error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="title">🌍 이니시스 해외카드 전용 결제</h2>
+
+    <div class="card-guide">
+        <h4>📋 사용 가능한 해외카드</h4>
+        <p>이 결제는 해외 발급 카드만 사용할 수 있습니다.</p>
+        <div class="card-list">
+            <span class="card-brand">VISA</span>
+            <span class="card-brand">MasterCard</span>
+            <span class="card-brand">AMEX</span>
+            <span class="card-brand">JCB</span>
+            <span class="card-brand">DINERS</span>
+        </div>
+        <small>※ 국내 은행에서 발급한 카드는 사용할 수 없습니다.</small>
+    </div>
+
+    <div class="loading">
+        <div class="spinner"></div>
+        <p>결제창을 준비 중입니다...</p>
+    </div>
+
+    <div id="debug-info"></div>
+    <div id="error-message"></div>
+</div>
+
+<script>
+    function addDebugInfo(message) {
+        const debugDiv = document.getElementById('debug-info');
+        const timestamp = new Date().toLocaleTimeString();
+        const logMessage = `[${timestamp}] ${message}\n`;
+        debugDiv.textContent += logMessage;
+        debugDiv.scrollTop = debugDiv.scrollHeight;
+        console.log(`[${timestamp}] ${message}`);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {
+        orderId: urlParams.get('orderId') || `order_${Date.now()}`,
+        amount: parseInt(urlParams.get('amount')) || 1000,
+        buyerName: urlParams.get('buyerName') || "홍길동",
+        buyerEmail: urlParams.get('buyerEmail') || "test@example.com",
+        buyerTel: urlParams.get('buyerTel') || "01012345678",
+        buyerAddr: urlParams.get('buyerAddr') || "서울특별시 강남구",
+        redirectUrl: urlParams.get('redirectUrl') || "com.myno1214.roomi://result",
+        // 이니시스 전용 채널키로 변경 (실제 이니시스 채널키 사용)
+
+        channelKey: urlParams.get('channelKey') || "channel-key-0dfb8c53-05f6-4017-8ce5-6cff2f815022",
+        storeId: urlParams.get('storeId') || "store-7bb98274-0fb5-4b2e-8d60-d3bff2f3ca85"
+    };
+
+    window.onload = function () {
+        addDebugInfo('🚀 이니시스 해외카드 전용 결제 시작');
+        addDebugInfo(`주문 ID: ${params.orderId}`);
+        addDebugInfo(`결제 금액: ${params.amount.toLocaleString()}원`);
+
+        // 이니시스 해외카드 전용 결제 요청
+        const paymentRequest = {
+            storeId: params.storeId,
+            paymentId: params.orderId,
+            channelKey: params.channelKey,
+            payMethod: 'CARD',
+
+            // 🌍 해외카드 전용 설정
+            locale : 'EN_US', // 영어로 설정하여 해외 결제 환경 조성
+
+            // 이니시스 해외카드 전용 옵션
+            cardOptions: {
+                enableCardInstallment: false, // 할부 비활성화 (국내카드 주요 기능)
+                enableCardPoint: false,       // 카드 포인트 비활성화
+                enableCardDiscount: false,    // 카드 즉시할인 비활성화
+
+                // 해외카드 브랜드만 허용
+                allowedCardCompanies: [
+                    "VI,MA,AX,JC,DI"
+                    // 다이너스
+                ]
+            },
+
+            orderName: "해외카드 전용 결제 상품",
+            totalAmount: params.amount,
+            currency: "KRW",
+
+            customer: {
+                customerId: params.buyerTel,
+                fullName: params.buyerName,
+                phoneNumber: params.buyerTel,
+                email: params.buyerEmail
+            },
+
+            redirectUrl: params.redirectUrl,
+
+            // 이니시스 전용 bypass 파라미터
+            bypass: {
+                inicis: {
+                    // 이니시스 해외카드 전용 설정
+                    acceptmethod: "CARD(VI,MA,AX,JC,DI):no_installment:no_interest", // 해외카드만, 할부 불가
+                    card_code: "VI,MA,AX,JC,DI", // VISA, MasterCard, AMEX, JCB, DINERS만
+                    quotaopt: "0",               // 일시불만 허용
+                    nointerest: "no",            // 무이자 할부 비허용
+                    international_card_yn: "Y",  // 해외카드만 허용
+                    domestic_card_yn: "N",       // 국내카드 비허용
+                    foreign_card_yn: "Y"         // 외국카드 허용
+                }
+            },
+
+            // 추가 메타데이터
+            customData: {
+                cardType: "overseas_only",
+                pgProvider: "inicis",
+                allowDomestic: false,
+                enforceOverseas: true
+            }
+        };
+
+        addDebugInfo('📤 이니시스 결제 요청 데이터:');
+        addDebugInfo(JSON.stringify(paymentRequest, null, 2));
+
+        // 결제 요청 실행
+        PortOne.requestPayment(paymentRequest)
+            .then(result => {
+                addDebugInfo("✅ 결제 응답 수신:");
+                addDebugInfo(JSON.stringify(result, null, 2));
+
+                if (result.code != null) {
+                    // 결제 실패
+                    throw new Error(`결제 실패: ${result.message} (코드: ${result.code})`);
+                } else {
+                    // 결제 성공
+                    addDebugInfo("🎉 결제 성공!");
+                    addDebugInfo(`거래 ID: ${result.txId}`);
+                    addDebugInfo(`결제 ID: ${result.paymentId}`);
+
+                    // 해외카드 검증을 위한 서버 호출 (선택사항)
+                    verifyOverseasCard(result)
+                        .then(verification => {
+                            if (verification.isOverseasCard) {
+                                addDebugInfo("✅ 해외카드 검증 완료");
+                                // 성공 처리
+                                setTimeout(() => {
+                                    window.location.href = `${params.redirectUrl}?success=true&paymentId=${result.paymentId}&txId=${result.txId}`;
+                                }, 2000);
+                            } else {
+                                addDebugInfo("❌ 국내카드 사용 감지 - 결제 취소 진행");
+                                // 국내카드로 결제된 경우 취소
+                                cancelPayment(result.paymentId, "해외카드 전용 결제에서 국내카드 사용");
+                            }
+                        })
+                        .catch(error => {
+                            addDebugInfo("⚠️ 카드 검증 실패, 수동 확인 필요");
+                            addDebugInfo(`검증 오류: ${error.message}`);
+                            // 검증 실패시에도 결제 완료로 처리 (수동 확인)
+                            setTimeout(() => {
+                                window.location.href = `${params.redirectUrl}?success=true&paymentId=${result.paymentId}&needsVerification=true`;
+                            }, 2000);
+                        });
+                }
+            })
+            .catch(error => {
+                addDebugInfo("❌ 결제 실패:");
+                addDebugInfo(JSON.stringify(error, null, 2));
+
+                const errorMessage = error.message || error.code || 'Unknown error';
+                document.getElementById('error-message').innerHTML = `
+                    <strong>결제 실패</strong><br>
+                    ${errorMessage}<br>
+                    <small>해외 발급 카드만 사용 가능합니다.</small>
+                `;
+                document.getElementById('error-message').style.display = 'block';
+
+                // 상세 에러 정보
+                if (error.details) {
+                    addDebugInfo("📋 에러 상세:");
+                    addDebugInfo(JSON.stringify(error.details, null, 2));
+                }
+
+                // 에러 타입별 안내
+                if (errorMessage.includes('card') || errorMessage.includes('카드')) {
+                    addDebugInfo("💡 해외 발급 카드를 사용해주세요.");
+                }
+            });
+    };
+
+    // 해외카드 검증 함수 (서버 API 호출)
+    async function verifyOverseasCard(paymentResult) {
+        try {
+            addDebugInfo("🔍 해외카드 검증 시작...");
+
+            const response = await fetch('/api/verify-overseas-card', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    paymentId: paymentResult.paymentId,
+                    txId: paymentResult.txId,
+                    storeId: params.storeId
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            addDebugInfo(`검증 결과: ${result.isOverseasCard ? '해외카드' : '국내카드'}`);
+
+            return result;
+
+        } catch (error) {
+            addDebugInfo(`검증 API 호출 실패: ${error.message}`);
+            // 검증 실패시 기본적으로 허용 (수동 확인)
+            return { isOverseasCard: true, needsManualVerification: true };
+        }
+    }
+
+    // 결제 취소 함수
+    async function cancelPayment(paymentId, reason) {
+        try {
+            addDebugInfo("🔄 결제 취소 진행...");
+
+            const response = await fetch('/api/cancel-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    paymentId: paymentId,
+                    reason: reason,
+                    storeId: params.storeId
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                addDebugInfo("✅ 결제 취소 완료");
+                alert("국내카드는 사용할 수 없습니다. 해외 발급 카드를 사용해주세요.");
+                window.location.href = `${params.redirectUrl}?cancelled=true&reason=domestic_card`;
+            } else {
+                addDebugInfo("❌ 결제 취소 실패");
+                alert("결제 취소 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
+            }
+
+        } catch (error) {
+            addDebugInfo(`결제 취소 API 호출 실패: ${error.message}`);
+            alert("결제 취소 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
+        }
+    }
+</script>
+</body>
+</html>

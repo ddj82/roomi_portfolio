@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아임포트 - KCP 결제 테스트</title>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+</head>
+<body>
+<div style="text-align: center; padding: 20px;">
+    <h2>결제 진행 중...</h2>
+    <div id="debug-info" style="text-align: left; padding: 10px; font-size: 12px; color: #666;"></div>
+    <div id="error-message" style="color: red; display: none;"></div>
+</div>
+
+<script>
+    function addDebugInfo(message) {
+        const debugDiv = document.getElementById('debug-info');
+        const timestamp = new Date().toLocaleTimeString();
+        debugDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+        console.log(`[${timestamp}] ${message}`);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {
+        orderId: urlParams.get('orderId') || `order_${Date.now()}`,
+        amount: urlParams.get('amount') || "1000",
+        currency: urlParams.get('currency') || "KRW",
+        buyerName: urlParams.get('buyerName') || "홍길동",
+        buyerEmail: urlParams.get('buyerEmail') || "test@example.com",
+        buyerTel: urlParams.get('buyerTel') || "01012345678",
+        buyerAddr: urlParams.get('buyerAddr') || "서울특별시 강남구",
+        pg: "kcp.T0000"  // KCP 설정
+    };
+
+    function initPayment() {
+        if (!window.IMP) {
+            addDebugInfo('아임포트 SDK 로딩 대기 중...');
+            setTimeout(initPayment, 1000);
+            return;
+        }
+
+        const IMP = window.IMP;
+        IMP.init("imp01154410");  // 아임포트 가맹점 식별코드
+
+        addDebugInfo('KCP 결제 요청 시작...');
+
+        IMP.request_pay({
+            pg: params.pg,
+            pay_method: "card",
+            merchant_uid: params.orderId,
+            name: "KCP 테스트 결제",
+            amount: params.amount,
+            currency: params.currency,
+            buyer_name: params.buyerName,
+            buyer_email: params.buyerEmail,
+            buyer_tel: params.buyerTel,
+            buyer_addr: params.buyerAddr,
+            buyer_postcode: "06018",
+            display: {
+                card_quota: [0,2,3]  // 일시불, 2개월, 3개월 할부 허용
+            },
+            m_redirect_url: "roomi://payment-success"
+        }, function (rsp) {
+            if (rsp.success) {
+                addDebugInfo('✅ 결제 성공: ' + JSON.stringify(rsp));
+                alert("결제가 성공적으로 완료되었습니다!");
+            } else {
+                addDebugInfo('❌ 결제 실패: ' + JSON.stringify(rsp));
+                document.getElementById('error-message').textContent =
+                    `결제 실패: ${rsp.error_msg || 'Unknown error'}`;
+                document.getElementById('error-message').style.display = 'block';
+            }
+        });
+    }
+
+    window.onload = function() {
+        addDebugInfo('✅ 페이지 로드 완료');
+        addDebugInfo('🔹 전달받은 파라미터: ' + JSON.stringify(params));
+        setTimeout(initPayment, 1000);
+    };
+</script>
+</body>
+</html>

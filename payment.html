@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KG이니시스 결제</title>
+    <!-- 정식 환경 스크립트 사용 -->
+    <script type="text/javascript" src="https://stdpay.inicis.com/stdjs/INIStdPay.js" charset="UTF-8"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0,0,0,.3);
+            border-radius: 50%;
+            border-top-color: #4CAF50;
+            animation: spin 1s ease-in-out infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #debug-info {
+            text-align: left;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        #error-message {
+            color: red;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>결제 준비 완료</h2>
+    <div class="loading"></div>
+    <p>아래 버튼을 클릭하면 결제창으로 이동합니다.</p>
+    <button id="startPayment" class="button">결제 시작하기</button>
+    <div id="error-message"></div>
+    <div id="debug-info"></div>
+</div>
+
+<!-- INIpay Standard 결제 폼 -->
+<form id="sendPayForm" name="sendPayForm" method="post" target="_self" accept-charset="UTF-8">
+    <!-- 폼 필드는 자바스크립트로 추가됩니다 -->
+</form>
+
+<script>
+    // 디버그 정보 출력 함수
+    function addDebugInfo(msg) {
+        const debugDiv = document.getElementById('debug-info');
+        const time = new Date().toLocaleTimeString();
+        debugDiv.innerHTML += `[${time}] ${msg}<br>`;
+        console.log(`[${time}] ${msg}`);
+    }
+
+    // URL 파라미터 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {
+        orderId: urlParams.get('orderId') || `order_${Date.now()}`,
+        amount: urlParams.get('amount') || "1000",
+        buyerName: urlParams.get('buyerName') || "홍길동",
+        buyerEmail: urlParams.get('buyerEmail') || "test@example.com",
+        buyerTel: urlParams.get('buyerTel') || "01012345678",
+        buyerAddr: urlParams.get('buyerAddr') || "서울특별시 강남구"
+    };
+
+    // 로딩 시 서명 요청
+    window.onload = async function () {
+        try {
+            addDebugInfo('페이지 로드 완료');
+
+            // 서명 요청
+            addDebugInfo('서명 요청 시작');
+            const res = await fetch('https://roomi.co.kr/api/payment/generate-signature', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ oid: params.orderId, price: params.amount })
+            });
+
+            const data = await res.json();
+            addDebugInfo('서명 응답: ' + JSON.stringify(data));
+
+            if (!data.success) {
+                document.getElementById('error-message').textContent = '서명 생성 실패: ' + (data.message || '알 수 없는 오류');
+                document.getElementById('error-message').style.display = 'block';
+                return;
+            }
+
+            // 폼 준비
+            const form = document.getElementById('sendPayForm');
+            form.action = "https://mobile.inicis.com/smart/payment/";
+
+            // 폼 필드 초기화
+            form.innerHTML = '';
+
+            // mid, oid, price 필드 먼저 추가 (일반 필드)
+            addInput(form, 'mid', 'MOIroomi59');
+            addInput(form, 'oid', params.orderId);
+            addInput(form, 'price', params.amount);
+            addInput(form, 'goodname', '테스트 결제 상품');
+
+            // INIStdPay에 필요한 P_ 필드 추가
+            addInput(form, 'P_MID', 'MOIroomi59');
+            addInput(form, 'P_OID', params.orderId);
+            addInput(form, 'P_AMT', params.amount);
+            addInput(form, 'P_GOODS', '테스트 결제 상품');
+            addInput(form, 'P_UNAME', params.buyerName);
+            addInput(form, 'P_MOBILE', params.buyerTel);
+            addInput(form, 'P_EMAIL', params.buyerEmail);
+            addInput(form, 'P_TIMESTAMP', data.timestamp);
+            addInput(form, 'P_SIGNATURE', data.signature);
+            addInput(form, 'P_CHARSET', 'utf8');
+            addInput(form, 'P_MNAME', 'Roomi');
+            addInput(form, 'P_NEXT_URL', 'https://roomi.co.kr/success.html');
+            addInput(form, 'P_NOTI_URL', 'https://roomi.co.kr/inicis_noti.php');
+            addInput(form, 'P_RETURN_URL', 'https://roomi.co.kr/fail.html');
+            addInput(form, 'P_HPP_METHOD', '1');
+            addInput(form, 'P_NOTI', 'Y');
+            addInput(form, 'P_RESERVED', 'below1000=Y');
+
+            // 결제 버튼 클릭 이벤트 설정
+            document.getElementById('startPayment').addEventListener('click', function() {
+                startPayment();
+            });
+
+            addDebugInfo('결제 준비 완료. 버튼을 클릭하여 결제를 시작하세요.');
+
+        } catch (err) {
+            addDebugInfo(`오류 발생: ${err.message}`);
+            document.getElementById('error-message').textContent = `처리 중 오류: ${err.message}`;
+            document.getElementById('error-message').style.display = 'block';
+        }
+    };
+
+    // 입력 필드 추가 헬퍼 함수
+    function addInput(form, name, value) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+        addDebugInfo(`${name}: ${value}`);
+    }
+
+    // 결제 시작 함수
+    function startPayment() {
+        try {
+            addDebugInfo('결제 시작 버튼 클릭됨');
+
+            const form = document.getElementById('sendPayForm');
+
+            // 폼 검증 로그
+            addDebugInfo(`폼 검증: id=${form.id}, name=${form.name}, elements 수=${form.elements.length}`);
+
+            // 폼 내용 로그
+            let formContent = "";
+            for(let i=0; i<form.elements.length; i++) {
+                formContent += `${i}: ${form.elements[i].name}=${form.elements[i].value}, `;
+            }
+            addDebugInfo(`폼 내용: ${formContent}`);
+
+            // 직접 폼 제출 사용
+            addDebugInfo('직접 폼 제출 시도...');
+            form.submit();
+
+            // INIStdPay.pay 백업 방법 (폼 제출이 실패할 경우)
+            // setTimeout(() => {
+            //     addDebugInfo('INIStdPay.pay 시도...');
+            //     INIStdPay.pay('sendPayForm');
+            // }, 300);
+
+        } catch (err) {
+            addDebugInfo(`결제 시작 오류: ${err.message}`);
+            document.getElementById('error-message').textContent = `결제 시작 오류: ${err.message}`;
+            document.getElementById('error-message').style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>

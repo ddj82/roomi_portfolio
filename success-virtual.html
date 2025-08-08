@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>가상계좌 발급 완료</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" />
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* 로딩 스피너 */
+        .loading-spinner {
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 숨겨진 컨테이너 - 기능은 유지하되 화면에 보이지 않음 */
+        .hidden-container {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            border-radius: 12px;
+            max-width: 460px;
+            width: 100%;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .success-icon {
+            background-color: #10b981;
+            color: white;
+            border-radius: 50%;
+            width: 72px;
+            height: 72px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .info-list {
+            text-align: left;
+            margin-bottom: 32px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .info-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-weight: 600;
+        }
+
+        .loading {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+<!-- 화면에 보이는 로딩 인디케이터 -->
+<div class="loading-spinner"></div>
+
+<!-- 숨겨진 기존 컨테이너 - 기능은 그대로 동작 -->
+<div class="hidden-container">
+    <div class="container">
+        <div class="success-icon">
+            ✓
+        </div>
+        <h1>가상계좌 발급 완료</h1>
+        <p class="subtitle">아래 정보를 확인하고 지정된 계좌로 입금해주세요.</p>
+        <div class="info-list" id="account-info">
+            <div class="info-item">
+                <span class="info-label">은행명</span>
+                <span class="info-value loading" id="bank">로딩 중...</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">계좌번호</span>
+                <span class="info-value loading" id="account">로딩 중...</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">예금주</span>
+                <span class="info-value loading" id="holder">로딩 중...</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">입금기한</span>
+                <span class="info-value loading" id="expiration">로딩 중...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // window.location.reload = 'https://roomi.co.kr/indicator.html';
+    // 은행 코드 매핑
+    const bankMapping = {
+        'BANK_OF_KOREA': '한국은행',
+        'KDB': '산업은행',
+        'IBK': '기업은행',
+        'KOOKMIN': '국민은행',
+        'SUHYUP': '수협은행',
+        'KEXIM': '수출입은행',
+        'NONGHYUP': 'NH농협은행',
+        'LOCAL_NONGHYUP': '지역농축협',
+        'WOORI': '우리은행',
+        'STANDARD_CHARTERED': 'SC제일은행',
+        'CITI': '한국씨티은행',
+        'DAEGU': '아이엠뱅크',
+        'BUSAN': '부산은행',
+        'KWANGJU': '광주은행',
+        'JEJU': '제주은행',
+        'JEONBUK': '전북은행',
+        'KYONGNAM': '경남은행',
+        'KFCC': '새마을금고',
+        'SHINHYUP': '신협',
+        'SAVINGS_BANK': '저축은행',
+        'MORGAN_STANLEY': '모간스탠리은행',
+        'HSBC': 'HSBC은행',
+        'DEUTSCHE': '도이치은행',
+        'JPMC': '제이피모간체이스은행',
+        'MIZUHO': '미즈호은행',
+        'MUFG': '엠유에프지은행',
+        'BANK_OF_AMERICA': 'BOA은행',
+        'BNP_PARIBAS': '비엔피파리바은행',
+        'ICBC': '중국공상은행',
+        'BANK_OF_CHINA': '중국은행',
+        'NFCF': '산림조합중앙회',
+        'UOB': '대화은행',
+        'BOCOM': '교통은행',
+        'CCB': '중국건설은행',
+        'POST': '우체국',
+        'KODIT': '신용보증기금',
+        'KIBO': '기술보증기금',
+        'HANA': '하나은행',
+        'SHINHAN': '신한은행',
+        'K_BANK': '케이뱅크',
+        'KAKAO': '카카오뱅크',
+        'TOSS': '토스뱅크',
+        'MISC_FOREIGN': '기타 외국계은행'
+    };
+
+    // URL 파라미터에서 paymentId 추출
+    const params = new URLSearchParams(window.location.search);
+    const paymentId = params.get("paymentId");
+
+    if (paymentId) {
+        // API 호출하여 가상계좌 정보 가져오기 (POST 요청으로 body에 paymentId 전송)
+        fetch(`https://roomi.co.kr/api/payment/virtual-account`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                paymentId: paymentId
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('가상계좌 정보를 불러올 수 없습니다.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 은행명 매핑
+                const bankName = bankMapping[data.bank] || data.bank;
+
+                // 날짜 포맷팅
+                const expiredDate = new Date(data.expiredAt);
+                const formattedDate = expiredDate.toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                // DOM 업데이트
+                document.getElementById("bank").textContent = bankName;
+                document.getElementById("account").textContent = data.accountNumber;
+                document.getElementById("holder").textContent = data.remitteeName;
+                document.getElementById("expiration").textContent = formattedDate;
+
+                // 로딩 스타일 제거
+                document.querySelectorAll('.loading-spinner').forEach(el => {
+                    el.classList.remove('loading-spinner');
+                });
+
+                // 히든 스타일 제거
+                document.querySelectorAll('.hidden-container').forEach(el => {
+                    el.classList.remove('hidden-container');
+                });
+            })
+            .catch(error => {
+                console.error('가상계좌 정보 조회 실패:', error);
+
+                // 에러 표시
+                document.getElementById("bank").textContent = "정보 없음";
+                document.getElementById("account").textContent = "정보 없음";
+                document.getElementById("holder").textContent = "정보 없음";
+                document.getElementById("expiration").textContent = "정보 없음";
+
+                // 에러 스타일 적용
+                document.querySelectorAll('.loading').forEach(el => {
+                    el.classList.remove('loading');
+                    el.classList.add('error');
+                });
+            });
+    } else {
+        // paymentId가 없는 경우
+        document.getElementById("bank").textContent = "정보 없음";
+        document.getElementById("account").textContent = "정보 없음";
+        document.getElementById("holder").textContent = "정보 없음";
+        document.getElementById("expiration").textContent = "정보 없음";
+
+        document.querySelectorAll('.loading').forEach(el => {
+            el.classList.remove('loading');
+            el.classList.add('error');
+        });
+    }
+
+    // 앱으로 이동 버튼
+    // document.getElementById("goApp").addEventListener("click", () => {
+    //     const params = new URLSearchParams(window.location.search);
+    //     const orderId = params.get("paymentId") || "";
+    //     const txId = params.get("txId") || "";
+    //     window.location.href = `roomi://success?paymentId=${orderId}&txId=${txId}`;
+    // });
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>포트원 결제</title>
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: transparent;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #FF8282;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #debug-info {
+            text-align: left;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border-left: 4px solid #FF8282;
+            display: none;
+        }
+
+        #error-message {
+            color: #FF8282;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="spinner"></div>
+    <div id="debug-info"></div>
+    <div id="error-message"></div>
+</div>
+
+<script>
+    function addDebugInfo(message) {
+        const debugDiv = document.getElementById('debug-info');
+        const timestamp = new Date().toLocaleTimeString();
+        debugDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+        debugDiv.scrollTop = debugDiv.scrollHeight;
+        console.log(`[${timestamp}] ${message}`);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {
+        orderId: urlParams.get('orderId') || `order_${Date.now()}`,
+        amount: parseInt(urlParams.get('amount')) || 1000,
+        // amount: 1000,
+        buyerName: urlParams.get('buyerName') || "홍길동",
+        buyerEmail: urlParams.get('buyerEmail') || "test@example.com",
+        buyerTel: urlParams.get('buyerTel') || "01012345678",
+        buyerAddr: urlParams.get('buyerAddr') || "서울특별시 강남구",
+        redirectUrl: urlParams.get('redirectUrl') || "com.myno1214.roomi://virtual",
+        channelKey: urlParams.get('channelKey') || "channel-key-14a7fa72-0d06-4bb5-9502-f721b189eb86",
+        storeId: urlParams.get('storeId') || "store-7bb98274-0fb5-4b2e-8d60-d3bff2f3ca85",
+        customData: {
+            reservationId: urlParams.get('redirectUrl'),
+        },
+        // lang : "zh"
+    };
+
+    const validUntil = new Date();
+    validUntil.setMinutes(validUntil.getMinutes() + 29);
+
+    window.onload = function () {
+        addDebugInfo('📦 PortOne v2 결제 요청 시작');
+
+        const paymentRequest = {
+            storeId: params.storeId,
+            paymentId: params.orderId,
+            channelKey: params.channelKey,
+            payMethod: 'VIRTUAL_ACCOUNT',
+            orderName: "테스트 결제 상품",
+            totalAmount: params.amount,
+            currency: "KRW",
+            customer: {
+                customerId: params.buyerTel,
+                fullName: params.buyerName,
+                phoneNumber: params.buyerTel,
+                email: params.buyerEmail,
+                address: {
+                    addressLine1: params.buyerAddr,
+                    addressLine2: "",
+                    country: "KR"
+                }
+            },
+            // ✅ virtualAccount 설정 수정 - accountExpiry를 올바른 객체 형태로 설정
+            virtualAccount: {
+                accountExpiry: {
+                    dueDate: validUntil   // 유효 기간을 validUntil로 설정
+                },
+            },
+            redirectUrl: params.redirectUrl,
+            m_redirect_url: params.redirectUrl, // 모바일 리다이렉트 URL
+        };
+
+        addDebugInfo('결제 요청 데이터: ' + JSON.stringify(paymentRequest, null, 2));
+
+        PortOne.requestPayment(paymentRequest)
+            .then(async (response) => {
+                addDebugInfo('결제 응답: ' + JSON.stringify(response, null, 2));
+
+                // ⭐ response 객체 사용 (vaInfo 아님)
+                if (response.code === 'FAILURE_TYPE_PG') {
+                    addDebugInfo('❌ 결제 실패: ' + response.message);
+                    window.location.href = `/fail-virtual.html?message=${encodeURIComponent(response.message)}`;
+                } else if (response.paymentId) {
+                    addDebugInfo('✅ 가상계좌 발급 성공');
+                    // response 객체에서 필요한 정보 추출
+                    window.location.href = `/success-virtual.html?paymentId=${response.paymentId}&txId=${response.txId || ''}&bankCode=${response.virtualAccount?.bankCode || ''}&accountNumber=${response.virtualAccount?.accountNumber || ''}`;
+                } else {
+                    addDebugInfo('❓ 예상치 못한 응답');
+                    window.location.href = `/fail-virtual.html?message=예상치 못한 응답입니다`;
+                }
+            })
+            .catch(error => {
+                console.error("결제 실패", error);
+                addDebugInfo('❌ 결제 에러: ' + error.message);
+
+                const errorMessage = error.message || '결제 중 오류가 발생했습니다';
+                window.location.href = `/fail-virtual.html?message=${encodeURIComponent(errorMessage)}`;
+            });
+    };
+</script>
+</body>
+</html>

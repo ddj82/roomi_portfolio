@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 실패</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --error-color: #ef4444;
+            --error-bg: #fef2f2;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border-color: #e5e7eb;
+            --border-error: #fecaca;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            max-width: 480px;
+            width: 100%;
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 32px 32px;
+            background: var(--error-bg);
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: var(--error-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: shake 0.6s ease-out 0.3s both;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .error-icon::before,
+        .error-icon::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .error-icon::before {
+            transform: rotate(45deg);
+        }
+
+        .error-icon::after {
+            transform: rotate(-45deg);
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .error-info {
+            padding: 32px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--error-color);
+            word-break: break-all;
+            font-size: 14px;
+            background: var(--error-bg);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-error);
+        }
+
+        .footer {
+            padding: 24px 32px 32px;
+            text-align: center;
+            background: var(--bg-secondary);
+        }
+
+        .redirect-message {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .redirect-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .redirect-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .redirect-button:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--error-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .retry-info {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .header,
+            .error-info,
+            .footer {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="error-icon"></div>
+        <h1 class="title">결제 실패</h1>
+        <p class="subtitle">결제 처리 중 오류가 발생했습니다</p>
+    </div>
+
+    <div id="error-details" class="error-info">
+        <div class="loading">
+            <div class="spinner"></div>
+            오류 정보를 불러오는 중...
+        </div>
+    </div>
+
+<!--    <div class="footer">-->
+<!--        <p class="redirect-message">-->
+<!--            자동으로 앱이 열리지 않는 경우 아래 버튼을 클릭하세요-->
+<!--        </p>-->
+<!--        <button class="redirect-button" id="openAppButton">-->
+<!--            앱으로 이동-->
+<!--        </button>-->
+<!--    </div>-->
+</div>
+
+<script>
+    class PaymentFailPage {
+        constructor() {
+            this.params = this.getUrlParams();
+            this.init();
+        }
+
+        getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const result = {};
+            for (const [key, value] of params) {
+                result[key] = value;
+            }
+            return result;
+        }
+
+        init() {
+            this.displayErrorDetails();
+            //this.setupEventListeners();
+            //this.autoRedirect();
+        }
+
+        displayErrorDetails() {
+            const detailsElement = document.getElementById('error-details');
+
+            if (!this.params.code && !this.params.message) {
+                detailsElement.innerHTML = `
+            <div class="info-item">
+              <span class="info-label">알 수 없는 오류</span>
+              <span class="info-value">오류 정보를 찾을 수 없습니다</span>
+            </div>
+            ${this.getRetryInfo()}
+          `;
+                return;
+            }
+
+            const details = this.buildErrorDetails();
+            detailsElement.innerHTML = details + this.getRetryInfo();
+        }
+
+        buildErrorDetails() {
+            const items = [];
+
+            if (this.params.code) {
+                items.push(this.createInfoItem('오류 코드', this.params.code));
+            }
+
+            if (this.params.message) {
+                items.push(this.createInfoItem('오류 메시지', this.params.message));
+            }
+
+            if (this.params.orderId) {
+                items.push(this.createInfoItem('주문번호', this.params.orderId));
+            }
+
+            if (this.params.errorCode) {
+                items.push(this.createInfoItem('상세 오류 코드', this.params.errorCode));
+            }
+
+            if (this.params.errorType) {
+                items.push(this.createInfoItem('오류 유형', this.getErrorTypeName(this.params.errorType)));
+            }
+
+            return items.join('');
+        }
+
+        createInfoItem(label, value) {
+            return `
+          <div class="info-item">
+            <span class="info-label">${label}</span>
+            <span class="info-value">${value}</span>
+          </div>
+        `;
+        }
+
+        getErrorTypeName(errorType) {
+            const errorTypeNames = {
+                PROVIDER: '결제 제공자 오류',
+                INVALID_REQUEST: '잘못된 요청',
+                TIMEOUT: '시간 초과',
+                INTERNAL: '내부 오류',
+                USER_CANCELED: '사용자 취소',
+                REJECT: '거부됨',
+                UNAUTHORIZED: '인증 오류'
+            };
+            return errorTypeNames[errorType] || errorType;
+        }
+
+        getRetryInfo() {
+            return `
+          <div class="retry-info">
+            💡 문제가 지속되면 다른 결제 수단을 시도하거나 고객센터에 문의해주세요.
+          </div>
+        `;
+        }
+
+        buildDeepLink() {
+            let deepLink = 'com.myno1214.roomi://fail';
+
+            const allParams = {
+                ...this.params,
+                timestamp: new Date().toISOString(),
+                device: navigator.userAgent
+            };
+
+            const paramString = Object.entries(allParams)
+                .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+                .join('&');
+
+            if (paramString) {
+                deepLink += `?${paramString}`;
+            }
+
+            return deepLink;
+        }
+
+        redirectToApp() {
+            const deepLink = this.buildDeepLink();
+            console.log('딥링크:', deepLink);
+            console.log('전달할 오류 파라미터:', this.params);
+            window.location.href = deepLink;
+        }
+
+        setupEventListeners() {
+            document.getElementById('openAppButton').addEventListener('click', () => {
+                //this.redirectToApp();
+            });
+        }
+
+        autoRedirect() {
+            setTimeout(() => {
+                this.redirectToApp();
+            }, 1500);
+        }
+
+        async sendErrorInfoToServer() {
+            if (this.params.code && this.params.message) {
+                try {
+                    console.log('오류 정보 서버 전송:', this.params);
+                    // 실제 서버 API 호출 구현
+                } catch (error) {
+                    console.error('서버 전송 오류:', error);
+                }
+            }
+        }
+    }
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+        new PaymentFailPage();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>본인인증 완료</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-color: #3b82f6;
+      --primary-hover: #2563eb;
+      --success-color: #10b981;
+      --error-color: #ef4444;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --border-color: #e5e7eb;
+      --border-radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--bg-primary);
+      border-radius: var(--border-radius);
+      max-width: 480px;
+      width: 100%;
+      overflow: hidden;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      text-align: center;
+      padding: 40px 32px 32px;
+      background: var(--bg-secondary);
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: var(--success-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      animation: checkmark 0.6s ease-out 0.3s both;
+    }
+
+    .error-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: var(--error-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      animation: errorPulse 0.6s ease-out 0.3s both;
+    }
+
+    @keyframes checkmark {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes errorPulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .success-icon::after {
+      content: '';
+      width: 24px;
+      height: 12px;
+      border-left: 3px solid white;
+      border-bottom: 3px solid white;
+      transform: rotate(-45deg);
+      animation: drawCheck 0.3s ease-out 0.6s both;
+    }
+
+    .error-icon::before,
+    .error-icon::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 3px;
+      background: white;
+      border-radius: 2px;
+    }
+
+    .error-icon::before {
+      transform: rotate(45deg);
+    }
+
+    .error-icon::after {
+      transform: rotate(-45deg);
+    }
+
+    @keyframes drawCheck {
+      from {
+        width: 0;
+        height: 0;
+      }
+      to {
+        width: 24px;
+        height: 12px;
+      }
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    .verification-info {
+      padding: 32px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .info-value {
+      font-weight: 600;
+      color: var(--text-primary);
+      text-align: right;
+      flex: 1;
+      margin-left: 16px;
+      word-break: break-all;
+      font-size: 14px;
+    }
+
+    .status-success {
+      color: var(--success-color);
+    }
+
+    .status-error {
+      color: var(--error-color);
+    }
+
+    .footer {
+      padding: 24px 32px 32px;
+      text-align: center;
+      background: var(--bg-secondary);
+    }
+
+    .redirect-message {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .redirect-button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .redirect-button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .redirect-button:active {
+      transform: translateY(0);
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 12px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 0;
+        border-radius: 0;
+      }
+
+      .header,
+      .verification-info,
+      .footer {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div id="status-icon" class="success-icon"></div>
+    <h1 id="page-title" class="title">본인인증 완료</h1>
+    <p id="page-subtitle" class="subtitle">본인인증이 성공적으로 처리되었습니다</p>
+  </div>
+
+  <div id="verification-details" class="verification-info">
+    <div class="loading">
+      <div class="spinner"></div>
+      인증 정보를 불러오는 중...
+    </div>
+  </div>
+
+  <div class="footer">
+    <p class="redirect-message">
+      자동으로 앱이 열리지 않는 경우 아래 버튼을 클릭하세요
+    </p>
+    <button class="redirect-button" id="openAppButton">
+      앱으로 이동
+    </button>
+  </div>
+</div>
+
+<script>
+  class VerificationResultPage {
+    constructor() {
+      this.params = this.getUrlParams();
+      this.isSuccess = this.params.success === 'true';
+      this.locale = this.params.locale || 'ko';
+      this.texts = this.getTexts(this.locale);
+      this.init();
+    }
+
+    getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const result = {};
+      for (const [key, value] of params) {
+        result[key] = value;
+      }
+      return result;
+    }
+
+    getTexts(locale) {
+      const translations = {
+        ko: {
+          success: {
+            title: '본인인증 완료',
+            subtitle: '본인인증이 성공적으로 처리되었습니다'
+          },
+          error: {
+            title: '본인인증 실패',
+            subtitle: '본인인증 처리 중 오류가 발생했습니다'
+          },
+          loading: '인증 정보를 불러오는 중...',
+          redirectMessage: '자동으로 앱이 열리지 않는 경우 아래 버튼을 클릭하세요',
+          appButton: '앱으로 이동',
+          errorMessage: '인증 정보를 찾을 수 없습니다',
+          labels: {
+            status: '인증 상태',
+            impUid: '인증 고유번호',
+            merchantUid: '가맹점 주문번호',
+            name: '성명',
+            phone: '휴대폰번호',
+            birthday: '생년월일',
+            gender: '성별',
+            carrier: '통신사',
+            certified: '인증여부',
+            certifiedAt: '인증시간',
+            errorCode: '오류코드',
+            errorMsg: '오류메시지'
+          },
+          values: {
+            certified: '인증완료',
+            failed: '인증실패',
+            male: '남성',
+            female: '여성',
+            skt: 'SKT',
+            kt: 'KT',
+            lgu: 'LG U+'
+          }
+        },
+        en: {
+          success: {
+            title: 'Identity Verification Complete',
+            subtitle: 'Your identity verification has been processed successfully'
+          },
+          error: {
+            title: 'Identity Verification Failed',
+            subtitle: 'An error occurred during identity verification'
+          },
+          loading: 'Loading verification information...',
+          redirectMessage: 'If the app doesn\'t open automatically, click the button below',
+          appButton: 'Open App',
+          errorMessage: 'Verification information not found',
+          labels: {
+            status: 'Status',
+            impUid: 'Verification ID',
+            merchantUid: 'Merchant Order ID',
+            name: 'Name',
+            phone: 'Phone Number',
+            birthday: 'Date of Birth',
+            gender: 'Gender',
+            carrier: 'Carrier',
+            certified: 'Certified',
+            certifiedAt: 'Certified At',
+            errorCode: 'Error Code',
+            errorMsg: 'Error Message'
+          },
+          values: {
+            certified: 'Verified',
+            failed: 'Failed',
+            male: 'Male',
+            female: 'Female',
+            skt: 'SKT',
+            kt: 'KT',
+            lgu: 'LG U+'
+          }
+        }
+      };
+      return translations[locale] || translations.ko;
+    }
+
+    init() {
+      this.updatePageTexts();
+      this.updatePageStatus();
+      this.displayVerificationDetails();
+      this.setupEventListeners();
+      this.autoRedirect();
+    }
+
+    updatePageTexts() {
+      const statusTexts = this.isSuccess ? this.texts.success : this.texts.error;
+
+      document.getElementById('page-title').textContent = statusTexts.title;
+      document.getElementById('page-subtitle').textContent = statusTexts.subtitle;
+      document.querySelector('.redirect-message').textContent = this.texts.redirectMessage;
+      document.getElementById('openAppButton').textContent = this.texts.appButton;
+    }
+
+    updatePageStatus() {
+      const iconElement = document.getElementById('status-icon');
+
+      if (this.isSuccess) {
+        iconElement.className = 'success-icon';
+      } else {
+        iconElement.className = 'error-icon';
+      }
+    }
+
+    displayVerificationDetails() {
+      const detailsElement = document.getElementById('verification-details');
+
+      // 로딩 표시
+      detailsElement.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          ${this.texts.loading}
+        </div>
+      `;
+
+      // 파라미터 확인
+      if (!this.params.imp_uid && !this.params.error_msg) {
+        detailsElement.innerHTML = `
+          <div class="info-item">
+            <span class="info-label">오류</span>
+            <span class="info-value status-error">${this.texts.errorMessage}</span>
+          </div>
+        `;
+        return;
+      }
+
+      // 세부 정보 표시
+      setTimeout(() => {
+        const details = this.buildVerificationDetails();
+        detailsElement.innerHTML = details;
+      }, 800);
+    }
+
+    buildVerificationDetails() {
+      const items = [];
+
+      // 인증 상태
+      const statusValue = this.isSuccess ? this.texts.values.certified : this.texts.values.failed;
+      const statusClass = this.isSuccess ? 'status-success' : 'status-error';
+      items.push(this.createInfoItem(this.texts.labels.status, statusValue, statusClass));
+
+      if (this.isSuccess) {
+        // 성공인 경우
+        if (this.params.imp_uid) {
+          items.push(this.createInfoItem(this.texts.labels.impUid, this.params.imp_uid));
+        }
+
+        if (this.params.merchant_uid) {
+          items.push(this.createInfoItem(this.texts.labels.merchantUid, this.params.merchant_uid));
+        }
+
+        if (this.params.name) {
+          items.push(this.createInfoItem(this.texts.labels.name, this.params.name));
+        }
+
+        if (this.params.phone) {
+          items.push(this.createInfoItem(this.texts.labels.phone, this.formatPhoneNumber(this.params.phone)));
+        }
+
+        if (this.params.birthday) {
+          items.push(this.createInfoItem(this.texts.labels.birthday, this.formatBirthday(this.params.birthday)));
+        }
+
+        if (this.params.gender) {
+          const genderText = this.params.gender === 'male' ? this.texts.values.male : this.texts.values.female;
+          items.push(this.createInfoItem(this.texts.labels.gender, genderText));
+        }
+
+        if (this.params.carrier) {
+          const carrierText = this.getCarrierName(this.params.carrier);
+          items.push(this.createInfoItem(this.texts.labels.carrier, carrierText));
+        }
+
+        if (this.params.certified_at) {
+          const formattedDate = this.formatDate(new Date(this.params.certified_at));
+          items.push(this.createInfoItem(this.texts.labels.certifiedAt, formattedDate));
+        }
+      } else {
+        // 실패인 경우
+        if (this.params.error_code) {
+          items.push(this.createInfoItem(this.texts.labels.errorCode, this.params.error_code));
+        }
+
+        if (this.params.error_msg) {
+          items.push(this.createInfoItem(this.texts.labels.errorMsg, this.params.error_msg));
+        }
+
+        if (this.params.merchant_uid) {
+          items.push(this.createInfoItem(this.texts.labels.merchantUid, this.params.merchant_uid));
+        }
+      }
+
+      return items.join('');
+    }
+
+    createInfoItem(label, value, className = '') {
+      return `
+        <div class="info-item">
+          <span class="info-label">${label}</span>
+          <span class="info-value ${className}">${value}</span>
+        </div>
+      `;
+    }
+
+    formatPhoneNumber(phone) {
+      // 010-1234-5678 형태로 포맷
+      const cleaned = phone.replace(/\D/g, '');
+      if (cleaned.length === 11) {
+        return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+      }
+      return phone;
+    }
+
+    formatBirthday(birthday) {
+      // YYYYMMDD -> YYYY-MM-DD 형태로 포맷
+      if (birthday.length === 8) {
+        return birthday.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3');
+      }
+      return birthday;
+    }
+
+    getCarrierName(carrier) {
+      const carriers = {
+        'SKT': this.texts.values.skt,
+        'KT': this.texts.values.kt,
+        'LGU': this.texts.values.lgu
+      };
+      return carriers[carrier] || carrier;
+    }
+
+    formatDate(date) {
+      return `${date.getFullYear()}-${this.padZero(date.getMonth() + 1)}-${this.padZero(date.getDate())} ${this.padZero(date.getHours())}:${this.padZero(date.getMinutes())}`;
+    }
+
+    padZero(num) {
+      return num < 10 ? '0' + num : num;
+    }
+
+    buildDeepLink() {
+      const baseLink = this.isSuccess ?
+        'com.myno1214.roomi://verification-success' :
+        'com.myno1214.roomi://verification-fail';
+
+      const allParams = {
+        ...this.params,
+        locale: this.locale,
+        timestamp: new Date().toISOString(),
+        device: navigator.userAgent
+      };
+
+      const paramString = Object.entries(allParams)
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .join('&');
+
+      return paramString ? `${baseLink}?${paramString}` : baseLink;
+    }
+
+    redirectToApp() {
+      const deepLink = this.buildDeepLink();
+      console.log('딥링크:', deepLink);
+      console.log('전달할 파라미터:', this.params);
+      window.location.href = deepLink;
+    }
+
+    setupEventListeners() {
+      document.getElementById('openAppButton').addEventListener('click', () => {
+        this.redirectToApp();
+      });
+    }
+
+    autoRedirect() {
+      setTimeout(() => {
+        this.redirectToApp();
+      }, 2000);
+    }
+  }
+
+  // 페이지 로드 시 초기화
+  document.addEventListener('DOMContentLoaded', () => {
+    new VerificationResultPage();
+  });
+</script>
+</body>
+</html>

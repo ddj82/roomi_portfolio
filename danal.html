@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다날 결제 테스트</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<h1>다날 결제 테스트</h1>
+<p>아래 버튼을 클릭하여 다날 결제를 테스트해보세요.</p>
+
+<button onclick="submitDanalPayment()">결제하기</button>
+
+<form id="danalPayForm" method="post" action="https://test.pg.danalpay.com/main
+" target="_self">
+    <!-- 테스트용 CPID (다날에서 제공받은 실제 테스트 ID로 변경 필요) -->
+    <input type="hidden" name="TID" value="">
+    <input type="hidden" name="ITEMCODE" value="itemcode001">
+    <input type="hidden" name="ITEMNAME" value="테스트 상품">
+    <input type="hidden" name="AMOUNT" value="1000">
+    <input type="hidden" name="USERAGENT" value="WEB">
+    <input type="hidden" name="ORDERID" value="test_order_001">
+    <input type="hidden" name="TIMESTAMP" value="">
+    <input type="hidden" name="USERNAME" value="홍길동">
+    <input type="hidden" name="USERID" value="testuser">
+    <input type="hidden" name="USEREMAIL" value="test@example.com">
+    <input type="hidden" name="CANCELURL" value="https://roomi.co.kr/cancel.html">
+    <input type="hidden" name="RETURNURL" value="https://roomi.co.kr/success.html">
+    <input type="hidden" name="SIGNATURE" value="">
+</form>
+
+<script>
+    async function submitDanalPayment() {
+        const cpid = "A010002002"; // 테스트용 CPID
+        const cppwd = "password1234"; // 다날에서 받은 CPPWD (실제 비밀번호는 서버에서 보관해야 함)
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
+
+        const orderId = "test_order_001";
+        const amount = "1000";
+        const tid = cpid + timestamp;
+        const plainText = cpid + orderId + amount + timestamp + cppwd;
+
+        // SHA-256 해시 생성
+        const encoder = new TextEncoder();
+        const data = encoder.encode(plainText);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const signature = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+        // 폼에 값 설정
+        document.querySelector('input[name="TID"]').value = tid;
+        document.querySelector('input[name="TIMESTAMP"]').value = timestamp;
+        document.querySelector('input[name="SIGNATURE"]').value = signature;
+
+        document.getElementById("danalPayForm").submit();
+    }
+</script>
+</body>
+</html>
