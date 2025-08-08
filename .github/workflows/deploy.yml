@@ -39,6 +39,10 @@ jobs:
         env:
           CI: false  # 경고를 에러로 처리하지 않음
 
+      # 커스텀 도메인 설정
+      - name: Create CNAME file
+        run: echo "djpf.kro.kr" > ./build/CNAME
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:

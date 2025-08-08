@@ -35,13 +35,9 @@ import CertificationModalRedirect from "./components/modals/CertificationModalRe
 const queryClient = new QueryClient();
 
 export default function App() {
-    // GitHub Pages용 basename 설정
-    const basename = process.env.NODE_ENV === 'production'
-        ? '/roomi_portfolio'  // GitHub Pages 배포 시
-        : '';                 // 로컬 개발 시
 
     return (
-        <Router basename={basename}>
+        <Router>
             <QueryClientProvider client={queryClient}>
                 <AppContent/>
             </QueryClientProvider>
