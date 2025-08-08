@@ -8,6 +8,7 @@ import {SocialAuth} from "../../util/SocialAuth";
 import {logout} from "../../../api/api";
 import {useChatStore} from "../../stores/ChatStore";
 import CommonAlert from "../../util/CommonAlert";
+import {useNavigate} from "react-router-dom";
 
 export default function AuthButton(
     {
@@ -31,6 +32,7 @@ export default function AuthButton(
     const {isHost} = useIsHostStore();
     const {hostMode, resetUserMode} = useHostModeStore();
     const disconnect = useChatStore((state) => state.disconnect);
+    const navigate = useNavigate();
 
     const dropdownRef = useRef<HTMLDivElement>(null);
     const toggleDropdown = () => {
@@ -77,6 +79,10 @@ export default function AuthButton(
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [userVisible]);
+
+    const handleDropDownMenu = (menu: string) => {
+        navigate(menu);
+    };
     
     return (
         <div className="md:mr-4 mr-1.5">
@@ -140,8 +146,11 @@ export default function AuthButton(
                                 className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-roomi-000 text-roomi rounded-full shadow-md"
                                 onClick={toggleDropdown}
                             >
-                                <img src={profileImg} alt="프로필사진"
-                                     className="rounded-full md:w-10 md:h-10 w-8 h-8"/>
+                                <img
+                                    src={profileImg}
+                                    alt="프로필사진"
+                                    className="rounded-full md:w-10 md:h-10 w-8 h-8"
+                                />
                             </button>
                             {userVisible && (
                                 <div
@@ -149,16 +158,33 @@ export default function AuthButton(
                                     <ul className="py-2 text-sm text-gray-700">
                                         <li>
                                             {hostMode ? (
-                                                <a href="/host/myPage"
-                                                   className="block px-4 py-2 hover:bg-gray-100/70">{t('마이페이지')}</a>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDropDownMenu("/host/myPage")}
+                                                    className="block px-4 py-2 hover:bg-gray-100/70"
+                                                >
+                                                    {t('마이페이지')}
+                                                </button>
                                             ) : (
-                                                <a href="/myPage"
-                                                   className="block px-4 py-2 hover:bg-gray-100/70">{t('마이페이지')}</a>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDropDownMenu("/myPage")}
+                                                    className="block px-4 py-2 hover:bg-gray-100/70"
+                                                >
+                                                    {t('마이페이지')}
+                                                </button>
                                             )}
                                         </li>
                                         <li>
-                                            {!hostMode && (<a href="/chat"
-                                                              className="block px-4 py-2 hover:bg-gray-100/70">{t('메시지')}</a>)}
+                                            {!hostMode && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDropDownMenu("/chat")}
+                                                    className="block px-4 py-2 hover:bg-gray-100/70"
+                                                >
+                                                    {t('메시지')}
+                                                </button>
+                                            )}
                                         </li>
                                         {(isHost && currentLang === 'ko') && (
                                             <li>
