@@ -5,8 +5,8 @@ import {User} from "../types/user";
 import {Reservation} from "../types/reservation";
 
 // const BASE_URL = 'https://roomi.co.kr/api';
-// const BASE_URL = '';
-const BASE_URL = 'http://ddjpf.kro.kr';
+const BASE_URL = '';
+// const BASE_URL = 'http://ddjpf.kro.kr';
 
 // 로컬 스토리지에서 인증 토큰 가져오기
 const getAuthToken = () => {
