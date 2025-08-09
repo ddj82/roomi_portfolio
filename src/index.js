@@ -7,21 +7,17 @@ import './App.css';
 // 반드시 Modal.setAppElement을 호출하여 aria-hidden을 설정합니다.
 Modal.setAppElement('#root'); // 루트 DOM 요소를 설정
 
-// MSW 설정 (개발 환경에서만)
+// MSW 설정
 async function enableMocking() {
-    // GitHub Pages에서도 MSW 작동하도록 수정
-    if (process.env.NODE_ENV === 'development' || window.location.hostname.includes('github.io')) {
-        const { worker } = await import('./mocks/browser')
+    // 개발 환경 또는 배포 환경에서 MSW 시작
+    if (process.env.NODE_ENV === 'development' ||
+        (process.env.NODE_ENV === 'production' &&
+            (window.location.hostname.includes('github.io') ||
+                window.location.hostname === 'ddjpf.kro.kr'))) {
 
-        // 서비스 워커 시작 - GitHub Pages용 옵션 추가
+        const { worker } = await import('./mocks/browser')
         return worker.start({
-            onUnhandledRequest: 'bypass', // 처리되지 않은 요청은 그냥 통과
-            serviceWorker: {
-                // GitHub Pages의 경우 public path 설정
-                url: process.env.NODE_ENV === 'production'
-                    ? '/roomi_portfolio/mockServiceWorker.js'
-                    : '/mockServiceWorker.js'
-            }
+            onUnhandledRequest: 'bypass',
         })
     }
 }

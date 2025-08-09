@@ -2,7 +2,7 @@
   "name": "roomi_frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://ddjpf.kro.kr",
+  "homepage": "https://ddjpf.kro.kr",
   "dependencies": {
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
