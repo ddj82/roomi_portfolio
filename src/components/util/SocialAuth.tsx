@@ -14,7 +14,6 @@ interface SocialAuthResponse {
 }
 
 export class SocialAuth {
-
     private static readonly redirectUri = process.env.REACT_APP_BASE_URL; // 웹에서는 이렇게 기본 URI를 설정해두었습니다.
 
     static async googleLogin(): Promise<SocialAuthResponse> {
