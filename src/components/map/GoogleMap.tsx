@@ -45,7 +45,6 @@ const GoogleMap: React.FC<GoogleMapViewProps> = ({ onRoomsUpdate }) => {
     const mapRef = useRef<google.maps.Map | null>(null);
     const markerCluster = useRef<MarkerClusterer | null>(null);
     const infoWindow = useRef<google.maps.InfoWindow | null>(null);
-
     const selectedRoomId = useRef<number|null>(null);
     const currentOverlay = useRef<google.maps.OverlayView | null>(null);
 
