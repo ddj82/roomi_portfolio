@@ -653,6 +653,18 @@ const GoogleMap: React.FC<GoogleMapViewProps> = ({ onRoomsUpdate }) => {
                     return;
                 }
 
+                // 🔥 스크립트가 이미 DOM에 있는지 확인 추가
+                const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+                if (existingScript) {
+                    // 이미 로딩 중이라면 콜백을 기다림
+                    if (window.initMap) {
+                        window.initMap = () => {
+                            initMap().then(resolve).catch(reject);
+                        };
+                    }
+                    return;
+                }
+
                 const supportedLanguages = ["ko", "en", "ja", "zh-CN", "zh-TW"];
                 const locale = supportedLanguages.includes(i18n.language) ?
                     (i18n.language.startsWith('zh') ? 'zh' : i18n.language) : "en";
@@ -663,7 +675,7 @@ const GoogleMap: React.FC<GoogleMapViewProps> = ({ onRoomsUpdate }) => {
 
                 const script = document.createElement('script');
                 script.type = 'text/javascript';
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAP_API_KEY}&language=${locale}&libraries=marker&callback=initMap&language=${i18n.language}`;
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAP_API_KEY}&libraries=marker&callback=initMap&language=${locale}`;
                 script.onerror = reject;
                 document.head.appendChild(script);
             });

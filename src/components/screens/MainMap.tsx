@@ -32,8 +32,8 @@ export default function MainMap({isMobile}: Readonly<{ isMobile: boolean; }>) {
                         <div
                             className={`absolute inset-0 mb-[2.5rem] transition-transform duration-300 ${mobileRoomListOpen ? 'translate-y-full' : 'translate-y-0'}`}
                         >
-                            {/*<GoogleMap onRoomsUpdate={handleRoomsUpdate}/>*/}
-                            <NaverMap onRoomsUpdate={handleRoomsUpdate}/>
+                            <GoogleMap onRoomsUpdate={handleRoomsUpdate}/>
+                            {/*<NaverMap onRoomsUpdate={handleRoomsUpdate}/>*/}
                         </div>
 
                         {/* 리스트 영역 */}
@@ -64,8 +64,8 @@ export default function MainMap({isMobile}: Readonly<{ isMobile: boolean; }>) {
                 <div className="flex !h-[calc(100vh-5rem)] w-full"> {/* 브라우저 */}
                     {/* 왼쪽 지도 영역 - 70% */}
                     <div className="w-[70%] h-full relative">
-                        {/*<GoogleMap onRoomsUpdate={handleRoomsUpdate}/>*/}
-                        <NaverMap onRoomsUpdate={handleRoomsUpdate}/>
+                        <GoogleMap onRoomsUpdate={handleRoomsUpdate}/>
+                        {/*<NaverMap onRoomsUpdate={handleRoomsUpdate}/>*/}
                     </div>
                     {/* 오른쪽 리스트 영역 - 30% */}
                     <div className="w-[30%] h-full border-l border-gray-200 overflow-y-auto pb-4 scrollbar-hidden">

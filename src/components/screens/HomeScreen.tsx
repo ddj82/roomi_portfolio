@@ -31,8 +31,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ rooms: externalRooms }) => {
     };
 
     const renderMap = useCallback(
-        // () => <GoogleMap onRoomsUpdate={handleRoomsUpdate} />,
-        () => <NaverMap onRoomsUpdate={handleRoomsUpdate} />,
+        () => <GoogleMap onRoomsUpdate={handleRoomsUpdate} />,
+        // () => <NaverMap onRoomsUpdate={handleRoomsUpdate} />,
         [handleRoomsUpdate]
     );
 
